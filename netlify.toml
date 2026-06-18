@@ -1,0 +1,22 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+# Serverless functions live here (VirusTotal proxy etc.)
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Friendly alias for the VirusTotal proxy.
+[[redirects]]
+  from = "/api/vt"
+  to = "/.netlify/functions/vt-lookup"
+  status = 200
+
+# SPA fallback: let React Router handle all app routes.
+# (Function and asset paths are matched before this catch-all.)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

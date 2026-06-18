@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cyber Rebels — Investigate links. Expose trackers.</title>
+    <meta
+      name="description"
+      content="A free OSINT & privacy toolkit. Scan any domain, IP, or URL against 90+ threat engines and geolocate it — then see what the web knows about you and lock it down."
+    />
+    <meta name="theme-color" content="#07090d" />
+
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("cyberebels-theme");
+          if (t !== "light" && t !== "dark" && t !== "hacker") t = "dark";
+          document.documentElement.setAttribute("data-theme", t);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
+
+    <meta property="og:title" content="Cyber Rebels — Investigate links. Expose trackers." />
+    <meta
+      property="og:description"
+      content="Free OSINT & privacy toolkit. Scan suspicious links and IPs, see what the web knows about you, then lock it down."
+    />
+    <meta property="og:type" content="website" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <div style="padding:24px;font-family:monospace;color:#2de6a5;background:#07090d">
+        JavaScript is disabled. That's great for privacy — but this app needs it to run.
+      </div>
+    </noscript>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

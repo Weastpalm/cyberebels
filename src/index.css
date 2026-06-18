@@ -1,0 +1,198 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===================================================================
+   CYBER REBELS — "OPERATOR CONSOLE" DESIGN SYSTEM
+   Bold, living dark-terminal UI. Three palettes share one token set,
+   switched via [data-theme] on <html>. RGB channels are space-separated
+   so Tailwind /opacity modifiers keep working.
+   =================================================================== */
+:root,
+[data-theme="dark"] {
+  --c-base: 6 9 12;
+  --c-panel: 12 17 23;
+  --c-elevated: 18 26 34;
+  --c-line: 33 46 58;
+  --c-brand: 48 233 168;
+  --c-brand-dim: 20 150 110;
+  --c-onbrand: 3 11 9;
+  --c-info: 92 188 240;
+  --c-danger: 255 92 100;
+  --c-warn: 248 192 92;
+  --c-ink: 225 235 239;
+  --c-muted: 140 158 168;
+  --c-faint: 92 108 119;
+
+  --grid-alpha: 0.05;
+  --scan-alpha: 0.05;
+  --glow-a: 0.13;
+  --glow-b: 0.09;
+  --hi: rgb(255 255 255 / 0.05);
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.55), 0 18px 46px -24px rgb(0 0 0 / 0.9);
+  --glow: 0 0 0 1px rgb(var(--c-brand) / 0.32), 0 10px 40px -8px rgb(var(--c-brand) / 0.5);
+}
+
+[data-theme="light"] {
+  --c-base: 237 241 244;
+  --c-panel: 255 255 255;
+  --c-elevated: 231 237 241;
+  --c-line: 206 216 223;
+  --c-brand: 5 134 92;
+  --c-brand-dim: 5 110 75;
+  --c-onbrand: 255 255 255;
+  --c-info: 20 116 173;
+  --c-danger: 198 40 49;
+  --c-warn: 168 110 16;
+  --c-ink: 12 20 27;
+  --c-muted: 74 90 101;
+  --c-faint: 122 137 148;
+
+  --grid-alpha: 0.05;
+  --scan-alpha: 0.0;
+  --glow-a: 0.10;
+  --glow-b: 0.07;
+  --hi: rgb(255 255 255 / 0.65);
+  --shadow-1: 0 1px 2px rgb(15 30 40 / 0.08), 0 18px 40px -26px rgb(15 30 40 / 0.3);
+  --glow: 0 0 0 1px rgb(var(--c-brand) / 0.28), 0 10px 34px -10px rgb(var(--c-brand) / 0.32);
+}
+
+[data-theme="hacker"] {
+  --c-base: 0 0 0;
+  --c-panel: 3 10 6;
+  --c-elevated: 6 18 11;
+  --c-line: 13 60 35;
+  --c-brand: 0 255 120;
+  --c-brand-dim: 0 176 80;
+  --c-onbrand: 0 10 5;
+  --c-info: 64 224 200;
+  --c-danger: 255 58 68;
+  --c-warn: 240 205 70;
+  --c-ink: 190 255 210;
+  --c-muted: 86 172 122;
+  --c-faint: 44 106 71;
+
+  --grid-alpha: 0.08;
+  --scan-alpha: 0.08;
+  --glow-a: 0.18;
+  --glow-b: 0.12;
+  --hi: rgb(0 255 120 / 0.06);
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.7), 0 18px 48px -24px rgb(0 0 0 / 0.95);
+  --glow: 0 0 0 1px rgb(var(--c-brand) / 0.45), 0 12px 44px -8px rgb(var(--c-brand) / 0.6);
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    @apply text-ink font-sans antialiased;
+    background-color: rgb(var(--c-base));
+    background-image:
+      radial-gradient(40% 32% at 12% 6%, rgb(var(--c-brand) / var(--glow-a)), transparent 60%),
+      radial-gradient(44% 40% at 88% 94%, rgb(var(--c-brand) / var(--glow-b)), transparent 62%),
+      radial-gradient(34% 26% at 74% 12%, rgb(var(--c-info) / 0.06), transparent 60%);
+    background-attachment: fixed;
+    animation: bg-drift 26s ease-in-out infinite alternate;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+  h1, h2, h3 { text-wrap: balance; }
+  ::selection { background: rgb(var(--c-brand) / 0.30); color: rgb(var(--c-onbrand)); }
+  :focus-visible { outline: 2px solid rgb(var(--c-brand)); outline-offset: 2px; border-radius: 3px; }
+  * { scrollbar-width: thin; scrollbar-color: rgb(var(--c-line)) transparent; }
+  *::-webkit-scrollbar { width: 10px; height: 10px; }
+  *::-webkit-scrollbar-thumb { background: rgb(var(--c-line)); border-radius: 8px; border: 2px solid rgb(var(--c-base)); }
+  *::-webkit-scrollbar-thumb:hover { background: rgb(var(--c-brand-dim)); }
+}
+
+@keyframes bg-drift {
+  0% { background-position: 0% 0%, 0% 0%, 0% 0%; }
+  100% { background-position: 7% 5%, -7% -4%, -5% 6%; }
+}
+
+@layer components {
+  .panel {
+    @apply relative rounded-xl border border-line bg-panel;
+    box-shadow: inset 0 1px 0 0 var(--hi), var(--shadow-1);
+  }
+  .panel-accent {
+    @apply panel border-brand/40;
+    box-shadow: inset 0 1px 0 0 var(--hi), var(--shadow-1), var(--glow);
+  }
+  /* glowing top hairline — signature accent for featured panels */
+  .panel-accent::before {
+    content: "";
+    position: absolute;
+    left: 18px; right: 18px; top: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgb(var(--c-brand) / 0.8), transparent);
+  }
+  .console-bar { @apply flex items-center gap-2 border-b border-line bg-elevated px-4 py-2.5; }
+  .console-dot { @apply h-3 w-3 rounded-full; }
+  .divider { @apply h-px w-full bg-line; }
+
+  .mono-label { @apply font-mono text-xs uppercase tracking-[0.2em] text-faint; }
+  .eyebrow { @apply inline-flex items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-[0.22em] text-faint; }
+  .eyebrow::before {
+    content: "";
+    @apply inline-block h-3.5 w-[3px] rounded-full bg-brand;
+    box-shadow: 0 0 12px 0 rgb(var(--c-brand) / 0.9);
+  }
+
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 font-mono text-sm font-semibold tracking-tight transition-all duration-150; }
+  .btn-primary {
+    @apply btn bg-brand text-onbrand;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.3), var(--shadow-1);
+  }
+  .btn-primary:hover { @apply brightness-[1.08]; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.3), var(--glow); }
+  .btn-primary:active { @apply translate-y-px brightness-100; }
+  .btn-ghost { @apply btn border border-line bg-elevated/40 text-ink hover:border-brand hover:text-brand; }
+  .btn-ghost:hover { background: rgb(var(--c-brand) / 0.07); }
+
+  .link-accent { @apply text-brand underline decoration-brand/30 underline-offset-2 transition-colors hover:decoration-brand; }
+
+  .field { @apply w-full rounded-lg border border-line bg-elevated/70 px-4 py-3 text-sm text-ink outline-none transition-all placeholder:text-faint; }
+  .field:focus { @apply border-brand; box-shadow: 0 0 0 3px rgb(var(--c-brand) / 0.16); }
+
+  .chip { @apply inline-flex items-center rounded-md border border-line bg-elevated/40 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-faint transition-colors; }
+
+  .text-glow { text-shadow: 0 0 26px rgb(var(--c-brand) / 0.45); }
+}
+
+/* ===== signature atmosphere ===== */
+.surveil-grid {
+  position: relative;
+  background-image:
+    linear-gradient(rgb(var(--c-brand) / var(--grid-alpha)) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--c-brand) / var(--grid-alpha)) 1px, transparent 1px);
+  background-size: 46px 46px;
+  animation: grid-drift 38s linear infinite;
+}
+@keyframes grid-drift {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 0 920px, 0 920px; }
+}
+
+.scanline { pointer-events: none; position: fixed; inset: 0; z-index: 50; overflow: hidden; }
+.scanline::after {
+  content: "";
+  position: absolute; left: 0; right: 0; height: 180px;
+  background: linear-gradient(to bottom, transparent, rgb(var(--c-brand) / var(--scan-alpha)), transparent);
+  animation: scan 8s linear infinite;
+}
+
+.matrix-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5; }
+
+@keyframes geo-pulse {
+  0% { transform: scale(0.7); opacity: 0.9; transform-origin: center; }
+  70% { transform: scale(1.6); opacity: 0; }
+  100% { opacity: 0; }
+}
+.geo-pulse { transform-box: fill-box; transform-origin: center; animation: geo-pulse 2.4s ease-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  body { animation: none !important; }
+  .surveil-grid { animation: none !important; }
+  .scanline::after { animation: none; display: none; }
+  .matrix-canvas { display: none; }
+  .geo-pulse { animation: none !important; }
+  .animate-blink, .animate-fade-up, .animate-ping, .animate-pulse-slow, .animate-sweep { animation: none !important; }
+}
