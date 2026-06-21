@@ -4,4 +4,4 @@ User-agent: *
 Allow: /
 
 # Update the domain here if you deploy somewhere else.
-Sitemap: https://cyberebels.com/sitemap.xml
+Sitemap: https://cyberebels.com/sitemap_index.xml
