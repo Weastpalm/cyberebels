@@ -6,6 +6,7 @@ import {
   getIpInfo, getBrowserInfo, getOsInfo, getEnvSignals,
   detectWebRTCLeak, vpnHeuristic, computePrivacyScore, detectBrave,
 } from "../lib/detect.js";
+import { buildFingerprint } from "../lib/fingerprint.js";
 
 const LEVEL_COLOR = {
   good: "text-brand",
@@ -95,8 +96,10 @@ export default function AmITracked() {
       const [ip, webrtc] = await Promise.all([getIpInfo(), detectWebRTCLeak()]);
       if (cancelled) return;
       const vpn = vpnHeuristic(ip, env.timezone);
+      let fp = null;
+      try { fp = await buildFingerprint(); } catch (e) { fp = null; }
       const score = computePrivacyScore({ env, webrtc, vpn, isBrave });
-      setState({ loading: false, browser, os, env, isBrave, ip, webrtc, vpn, score });
+      setState({ loading: false, browser, os, env, isBrave, ip, webrtc, vpn, score, fp });
     })();
     return () => { cancelled = true; };
   }, []);
@@ -112,7 +115,7 @@ export default function AmITracked() {
     );
   }
 
-  const { browser, os, env, isBrave, ip, webrtc, vpn, score } = state;
+  const { browser, os, env, isBrave, ip, webrtc, vpn, score, fp } = state;
   const loc =
     ip.ok && !ip.limited
       ? [ip.city, ip.region, ip.country].filter(Boolean).join(", ")
@@ -165,6 +168,10 @@ export default function AmITracked() {
             <Row label="Pixel ratio" value={`${env.pixelRatio}x`} />
             <Row label="Timezone" value={env.timezone} />
             <Row label="Language" value={env.languages || env.language} />
+            <Row label="CPU cores" value={`${env.cores}`} />
+            <Row label="Device memory" value={env.memory} />
+            <Row label="Touch points" value={`${env.touch}`} />
+            <Row label="Color depth" value={env.colorDepth} />
           </Section>
 
           <Section title="Tracking Signals">
@@ -190,6 +197,25 @@ export default function AmITracked() {
             />
           </Section>
         </div>
+
+        {fp && (
+          <div className="panel mt-5 p-6">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h2 className="font-mono text-sm font-bold uppercase tracking-wider text-muted">Your Browser Fingerprint</h2>
+              <span className="font-mono text-xs text-danger">{fp.effectivelyUnique ? "effectively unique" : `~1 in ${fp.denominator.toLocaleString()}`}</span>
+            </div>
+            <p className="mt-1 text-sm text-muted">These signals combine into an identifier that follows you across sites with no cookies. The rarer your combination, the easier you are to single out — this is what changes from device to device.</p>
+            <div className="mt-4 grid gap-x-6 gap-y-1 sm:grid-cols-2">
+              {fp.components.map((sg, i) => (
+                <div key={i} className="flex items-baseline justify-between gap-3 border-b border-line/40 py-1.5">
+                  <span className="text-sm text-muted">{sg.key}</span>
+                  <span className="min-w-0 truncate text-right font-mono text-xs text-ink">{String(sg.value)}</span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 break-all font-mono text-[11px] text-faint">fingerprint hash · {fp.fullHash}</p>
+          </div>
+        )}
 
         {/* Findings */}
         <div className="panel mt-5 p-6">

@@ -21,7 +21,7 @@ const FEEDS = [
     links: [["abuse.ch URLhaus ↗", "https://urlhaus.abuse.ch/", true], ["ThreatFox ↗", "https://threatfox.abuse.ch/", true], ["AlienVault OTX ↗", "https://otx.alienvault.com/", true]] },
   { tag: "ddos", title: "DDoS & Attack Trends", icon: (<svg {...sv}><path d="M3 12h3l2-7 4 14 2-7h3" /><path d="M19 12h2" /></svg>),
     desc: "Near-real-time global DDoS and attack trends — what's being targeted, attack types, and where traffic anomalies are spiking right now.",
-    links: [["Cloudflare Radar ↗", "https://radar.cloudflare.com/security-and-attacks", true], ["Digital Attack Map ↗", "https://www.digitalattackmap.com/", true]] },
+    links: [["Cloudflare Radar ↗", "https://radar.cloudflare.com/security-and-attacks", true], ["Digital Attack Map ↗", "https://www.digitalattackmap.com/", true], ["Zone-H defacements ↗", "https://zone-h.org/", true]] },
 ];
 
 function FeedLinks({ links }) {
@@ -51,24 +51,26 @@ export default function IntelRadar() {
             {kev.status === "done" && kev.state === "unreachable" && <p className="font-mono text-sm text-warn">Live feed runs on the deployed site / netlify dev.</p>}
             {kev.status === "done" && kev.error && <p className="font-mono text-sm text-warn">{kev.error}</p>}
             {kev.status === "done" && kev.items && (
-              <ul className="divide-y divide-line/50">
+              <ul className="max-h-[26rem] divide-y divide-line/50 overflow-y-auto">
                 {kev.items.map((v) => (
                   <li key={v.cve} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2 font-mono text-xs">
                     <a href={`https://nvd.nist.gov/vuln/detail/${v.cve}`} target="_blank" rel="noopener noreferrer" className="font-bold text-brand hover:underline">{v.cve}</a>
+                    <span className={`chip ${v.ransomware ? "border-danger/50 text-danger" : "border-warn/50 text-warn"}`}>{v.ransomware ? "Critical" : "High"}</span>
                     {v.ransomware && <span className="chip border-danger/50 text-danger">ransomware</span>}
-                    <span className="min-w-0 flex-1 truncate text-muted">{v.vendor} {v.product} — {v.name}</span>
+                    <span className="font-semibold text-ink">{v.vendor} {v.product}</span>
+                    <span className="min-w-0 flex-1 truncate text-muted">{v.name}</span>
                     <span className="flex-none text-faint">{v.dateAdded}</span>
                   </li>
                 ))}
               </ul>
             )}
-            <p className="mt-3 font-mono text-[10px] text-faint">// source: CISA KEV catalog (public domain) · updated daily · CVEs marked <span className="text-danger">ransomware</span> are used in active ransomware campaigns.</p>
+            <p className="mt-3 font-mono text-[10px] text-faint">// source: CISA KEV catalog (public domain) · updated daily · every entry is actively exploited (High); <span className="text-danger">ransomware</span>-linked CVEs are flagged Critical.</p>
           </div>
         </div>
 
         {/* curated feeds */}
         <h2 className="mt-10 font-mono text-xl font-bold tracking-tight">Threat-intel feeds</h2>
-        <p className="mt-1 text-sm text-muted">The best free sources for each category. We link out rather than mirror them — their free APIs are non-commercial, so embedding them on a monetized site would break their terms.</p>
+        <p className="mt-1 text-sm text-muted">The best free sources for each category. We link out so you always get their latest data.</p>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           {FEEDS.map((f) => (
             <div key={f.title} className="panel flex flex-col p-6">

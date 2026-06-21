@@ -5,7 +5,7 @@ import AdSlot from "../components/AdSlot.jsx";
 import GeoConsole from "../components/GeoConsole.jsx";
 import BrandLogo from "../components/BrandLogo.jsx";
 import { getIpGeo } from "../lib/detect.js";
-import { detectType, hostOf, vtLookup, abuseIpdb, shodanInternetDB, resolveHost } from "../lib/osint.js";
+import { detectType, hostOf, vtLookup, abuseIpdb, shodanInternetDB, resolveHost, urlscanSearch } from "../lib/osint.js";
 import { loadHistory, saveHistory, addEntry, clearHistory } from "../lib/history.js";
 
 const TYPES = [
@@ -128,6 +128,24 @@ function ShodanBody({ d }) {
   );
 }
 
+function UrlscanBody({ d }) {
+  if (!d || d.state === "unreachable") return <Offline />;
+  if (d.error) return <Note>{d.error}</Note>;
+  if (!d.found) return <Note>No public scans indexed on urlscan.io. <a href="https://urlscan.io/" target="_blank" rel="noopener noreferrer" className="link-accent">Submit a scan ↗</a></Note>;
+  return (
+    <div className="space-y-2">
+      {d.results.map((x) => (
+        <a key={x.id} href={`https://urlscan.io/result/${x.id}/`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 overflow-hidden rounded-md border border-line bg-elevated/40 p-2 hover:border-brand">
+          <img src={`https://urlscan.io/screenshots/${x.id}.png`} alt="" loading="lazy" className="h-10 w-16 flex-none rounded border border-line object-cover" />
+          <span className="min-w-0 flex-1"><span className="block truncate font-mono text-[11px] text-ink">{x.url}</span><span className="block truncate font-mono text-[10px] text-faint">{[x.status && ("HTTP " + x.status), x.server, x.network, x.country, x.time && x.time.slice(0, 10)].filter(Boolean).join(" · ")}</span></span>
+          <span className="flex-none font-mono text-[10px] text-faint">\u2197</span>
+        </a>
+      ))}
+      <p className="font-mono text-[10px] text-faint">urlscan.io passive search \u00b7 {(d.total || d.results.length).toLocaleString()} public scan(s)</p>
+    </div>
+  );
+}
+
 function overallVerdict(r) {
   const { vt, abuse, shodan } = r;
   let bad = false, warn = false;
@@ -140,12 +158,12 @@ function overallVerdict(r) {
   return { tone: "good", badge: "CLEAN", text: "No feed flagged this target. Stay context-aware." };
 }
 
-function recordHistory(onResult, query, t, vt, abuse, shodan) {
+function recordHistory(onResult, r) {
   if (!onResult) return;
-  let mal = null, total = null;
+  const vt = r.vt; let mal = null, total = null;
   if (vt && vt.stats) { total = Object.values(vt.stats).reduce((a, b) => a + b, 0); mal = vt.stats.malicious; }
-  const v = overallVerdict({ vt, abuse, shodan });
-  onResult({ indicator: query, type: t, mal, total, tone: v ? v.tone : "mute", ts: Date.now() });
+  const v = overallVerdict(r);
+  onResult({ indicator: r.query, type: r.type, mal, total, tone: v ? v.tone : "mute", ts: Date.now(), full: r });
 }
 
 function HistoryList({ items, onClear }) {
@@ -228,7 +246,7 @@ function GeoBlock({ geo }) {
   );
 }
 
-function Investigator({ initialQuery = "", onResult }) {
+function Investigator({ initialQuery = "", onResult, preset }) {
   const navigate = useNavigate();
   const ref = useRef(null);
   const [val, setVal] = useState(initialQuery);
@@ -251,15 +269,16 @@ function Investigator({ initialQuery = "", onResult }) {
     setR({ type: t, query });
     try {
       if (t === "ip") {
-        const [vt, abuse, shodan, geo] = await Promise.all([vtLookup("ip", query), abuseIpdb(query), shodanInternetDB(query), geoFor("ip", query)]);
+        const [vt, abuse, shodan, geo, urlscan] = await Promise.all([vtLookup("ip", query), abuseIpdb(query), shodanInternetDB(query), geoFor("ip", query), urlscanSearch("ip", query)]);
         let hostVt = null, hostName = null;
         if (shodan && shodan.found && shodan.hostnames && shodan.hostnames.length && vt && vt.stats) { hostName = shodan.hostnames[0]; hostVt = await vtLookup("domain", hostName); }
-        setR({ type: t, query, vt, abuse, shodan, geo, hostVt, hostName });
-        recordHistory(onResult, query, t, vt, abuse, shodan);
+        const result = { type: t, query, vt, abuse, shodan, geo, hostVt, hostName, urlscan };
+        setR(result); recordHistory(onResult, result);
       } else {
-        const [vt, geo] = await Promise.all([vtLookup(t, query), geoFor(t, query)]);
-        setR({ type: t, query, vt, geo });
-        recordHistory(onResult, query, t, vt);
+        const us = t !== "file" ? urlscanSearch(t, query) : Promise.resolve(null);
+        const [vt, geo, urlscan] = await Promise.all([vtLookup(t, query), geoFor(t, query), us]);
+        const result = { type: t, query, vt, geo, urlscan };
+        setR(result); recordHistory(onResult, result);
       }
     } finally { setRunning(false); }
   }
@@ -269,7 +288,8 @@ function Investigator({ initialQuery = "", onResult }) {
     if (!query) { setR(null); return; }
     const t = detectType(query);
     setType(t); setVal(query);
-    run(query, t);
+    if (preset && preset.query === query) { setRunning(false); setR({ ...preset, _saved: true }); }
+    else { run(query, t); }
     setTimeout(() => ref.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 150);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialQuery]);
@@ -294,6 +314,13 @@ function Investigator({ initialQuery = "", onResult }) {
 
       {running && <Scanning type={r?.type || type} />}
 
+      {!running && r && (
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          {r._saved && <span className="chip border-info/50 text-info">saved result — no new API calls</span>}
+          <button onClick={() => run(r.query, r.type)} className="ml-auto font-mono text-[11px] text-faint transition-colors hover:text-brand">\u21bb re-scan (fresh)</button>
+        </div>
+      )}
+
       {!running && verdict && (
         <div className={`mt-4 flex flex-wrap items-center gap-3 rounded-xl border p-4 ${verdict.tone === "bad" ? "border-danger/40 bg-danger/5" : verdict.tone === "warn" ? "border-warn/40 bg-warn/5" : "border-brand/40 bg-brand/5"}`}>
           <Pill tone={verdict.tone === "bad" ? "bad" : verdict.tone === "warn" ? "warn" : "good"}>{verdict.badge}</Pill>
@@ -312,6 +339,11 @@ function Investigator({ initialQuery = "", onResult }) {
               <SourceCard name={`virustotal · auto deep-dive on ${r.hostName}`} logo="virustotal" status={cardStatus(r.hostVt, running)}><VtBody d={r.hostVt} type="domain" /></SourceCard>
             </div>
           )}
+          {r.urlscan && (
+            <div className="md:col-span-2">
+              <SourceCard name="urlscan.io · recent page scans" status={cardStatus(r.urlscan, running)}><UrlscanBody d={r.urlscan} /></SourceCard>
+            </div>
+          )}
           <GeoBlock geo={r.geo} />
         </div>
       )}
@@ -324,12 +356,12 @@ function Investigator({ initialQuery = "", onResult }) {
 const ti = { width: 18, height: 18, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round", strokeLinejoin: "round" };
 const ANALYST_TOOLS = [
   { to: "/osint/email", title: "Email & Phishing Analyzer", desc: "Originating IP, SPF/DKIM/DMARC, extracted links & domains, phishing language.", icon: (<svg {...ti}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></svg>) },
+  { to: "/osint/intel", title: "Intel Radar", desc: "Live exploited CVEs (CISA KEV) + feeds for ransomware, dark web, IOCs and DDoS.", icon: (<svg {...ti}><circle cx="12" cy="12" r="3" /><circle cx="12" cy="12" r="8" /><path d="M12 4v3M12 17v3M4 12h3M17 12h3" /></svg>) },
   { to: "/osint/domain", title: "Domain Intel", desc: "Registration age, registrar, nameservers, DNS records and a risk score.", icon: (<svg {...ti}><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" /></svg>) },
   { to: "/osint/redirects", title: "URL Redirect Analyzer", desc: "Follow a short link through every hop to its real destination.", icon: (<svg {...ti}><path d="M4 7h12l-3-3M20 17H8l3 3" /></svg>) },
   { to: "/osint/ssl", title: "SSL Inspector", desc: "Live TLS certificate: issuer, expiry, and every hostname it covers.", icon: (<svg {...ti}><rect x="4" y="11" width="16" height="9" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>) },
   { to: "/osint/qr", title: "QR Code Scanner", desc: "Decode a QR image and reveal where it points before you scan it.", icon: (<svg {...ti}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><path d="M14 14h3v3M21 14v7h-7" /></svg>) },
   { to: "/osint/decoder", title: "Decoder Bench", desc: "CyberChef-style: stack Base64 / Hex / URL / ROT13 / JWT and more.", icon: (<svg {...ti}><rect x="3" y="4" width="18" height="16" rx="2" /><path d="m7 9 3 3-3 3M13 15h4" /></svg>) },
-  { to: "/osint/intel", title: "Intel Radar", desc: "Live exploited CVEs (CISA KEV) + feeds for ransomware, dark web, IOCs and DDoS.", icon: (<svg {...ti}><circle cx="12" cy="12" r="3" /><circle cx="12" cy="12" r="8" /><path d="M12 4v3M12 17v3M4 12h3M17 12h3" /></svg>) },
 ];
 
 const SUBPAGES = [
@@ -346,6 +378,7 @@ export default function Osint() {
   const [history, setHistory] = useState(loadHistory);
   const onResult = useCallback((e) => setHistory((h) => { const n = addEntry(h, e); saveHistory(n); return n; }), []);
   const clearH = () => { clearHistory(); setHistory([]); };
+  const presetEntry = initial ? history.find((h) => h.indicator === initial && h.full) : null;
 
   const howToLd = {
     "@context": "https://schema.org", "@type": "HowTo",
@@ -373,7 +406,7 @@ export default function Osint() {
         </div>
       </header>
 
-      <section className="mx-auto max-w-6xl scroll-mt-24 px-4 py-4" id="investigate"><Investigator key={initial} initialQuery={initial} onResult={onResult} /><HistoryList items={history} onClear={clearH} /></section>
+      <section className="mx-auto max-w-6xl scroll-mt-24 px-4 py-4" id="investigate"><Investigator key={initial} initialQuery={initial} onResult={onResult} preset={presetEntry ? presetEntry.full : null} /><HistoryList items={history} onClear={clearH} /></section>
 
       <div className="mx-auto max-w-6xl px-4"><AdSlot slot="osint-mid" /></div>
 

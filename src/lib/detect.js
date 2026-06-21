@@ -150,6 +150,10 @@ export function getEnvSignals() {
     pixelRatio: window.devicePixelRatio || 1,
     platform: navigator.userAgentData?.platform || navigator.platform || "—",
     online: navigator.onLine,
+    cores: navigator.hardwareConcurrency || "unknown",
+    memory: navigator.deviceMemory ? navigator.deviceMemory + " GB" : "unknown",
+    touch: navigator.maxTouchPoints || 0,
+    colorDepth: (window.screen.colorDepth || 24) + "-bit",
   };
 }
 

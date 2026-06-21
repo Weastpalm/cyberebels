@@ -3,12 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cyber Rebels — Investigate links. Expose trackers.</title>
-    <meta
-      name="description"
-      content="A free OSINT & privacy toolkit. Scan any domain, IP, or URL against 90+ threat engines and geolocate it — then see what the web knows about you and lock it down."
-    />
+    <title>Cyber Rebels — Free Cybersecurity Toolkit (Threat Intel, OSINT &amp; Privacy)</title>
+    <meta name="description" content="Cyber Rebels is a free cybersecurity toolkit: a SOC-grade threat console, email &amp; phishing checks, OSINT and privacy tools, all in your browser." />
     <meta name="theme-color" content="#07090d" />
+    <link rel="canonical" href="https://cyberebels.com/" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <script>
       (function () {
@@ -16,33 +20,34 @@
           var t = localStorage.getItem("cyberebels-theme");
           if (t !== "light" && t !== "dark" && t !== "hacker") t = "dark";
           document.documentElement.setAttribute("data-theme", t);
-        } catch (e) {
-          document.documentElement.setAttribute("data-theme", "dark");
-        }
+        } catch (e) { document.documentElement.setAttribute("data-theme", "dark"); }
       })();
     </script>
 
-    <meta property="og:title" content="Cyber Rebels — Investigate links. Expose trackers." />
-    <meta
-      property="og:description"
-      content="Free OSINT & privacy toolkit. Scan suspicious links and IPs, see what the web knows about you, then lock it down."
-    />
+    <meta property="og:title" content="Cyber Rebels — Free Cybersecurity Toolkit" />
+    <meta property="og:description" content="A SOC-grade threat console, email & phishing checks, OSINT and privacy tools — free, in your browser." />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://cyberebels.com/" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <div id="root"></div>
-    <noscript>
-      <div style="padding:24px;font-family:monospace;color:#2de6a5;background:#07090d">
-        JavaScript is disabled. That's great for privacy — but this app needs it to run.
-      </div>
-    </noscript>
+    <div id="root">
+      <!-- Crawlable fallback: replaced by the app on load. Gives no-JS crawlers real content. -->
+      <main style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">
+        <h1 style="font-family:'JetBrains Mono',monospace;font-size:30px;color:#e1ebed">Cyber Rebels — the free cybersecurity toolkit</h1>
+        <p style="line-height:1.7;color:#9fb0b8">Cyber Rebels is a free, browser-based cybersecurity toolkit for analysts and curious defenders. It brings threat intelligence, phishing analysis, OSINT, and personal privacy tools together in one place — no sign-up, and nothing leaves your browser unless a lookup requires it.</p>
+        <h2 style="font-family:'JetBrains Mono',monospace;color:#2de9a8">Threat Center</h2>
+        <p style="line-height:1.7;color:#9fb0b8">The <a href="/osint" style="color:#2de9a8">Investigate Console</a> correlates VirusTotal, AbuseIPDB and Shodan on any IP, domain, URL or file hash, with live geolocation. Round it out with the <a href="/osint/email" style="color:#2de9a8">Email &amp; Phishing checker</a>, <a href="/osint/domain" style="color:#2de9a8">Domain Intel</a> (registration age, DNS and a risk score), a <a href="/osint/redirects" style="color:#2de9a8">URL redirect analyzer</a>, an <a href="/osint/ssl" style="color:#2de9a8">SSL certificate inspector</a>, a <a href="/osint/qr" style="color:#2de9a8">QR code safety scanner</a>, the <a href="/osint/intel" style="color:#2de9a8">Intel Radar</a> of actively-exploited vulnerabilities, and a <a href="/osint/decoder" style="color:#2de9a8">decoder bench</a>.</p>
+        <h2 style="font-family:'JetBrains Mono',monospace;color:#2de9a8">OSINT &amp; privacy</h2>
+        <p style="line-height:1.7;color:#9fb0b8">Search a handle across platforms with <a href="/osint/username" style="color:#2de9a8">Username Search</a>, map your <a href="/osint/footprint" style="color:#2de9a8">public footprint</a>, and check exactly what the web knows about you with <a href="/am-i-tracked" style="color:#2de9a8">Am I Being Tracked?</a> and the <a href="/fingerprint" style="color:#2de9a8">browser fingerprint</a> test. Then lock it down with honest <a href="/best-vpns" style="color:#2de9a8">VPN recommendations</a> and <a href="/de-google" style="color:#2de9a8">de-Google</a> guidance.</p>
+        <h2 style="font-family:'JetBrains Mono',monospace;color:#2de9a8">Learn &amp; defend</h2>
+        <p style="line-height:1.7;color:#9fb0b8">Hands-on <a href="/learn" style="color:#2de9a8">interactive labs</a> teach password hashing, password cracking, IP addressing and how network traffic flows, and the <a href="/guides" style="color:#2de9a8">guides</a> and <a href="/blog" style="color:#2de9a8">blog</a> explain privacy and security in plain English. Enable JavaScript for the full interactive toolkit.</p>
+      </main>
+    </div>
+    <noscript>This app needs JavaScript for the interactive tools, but the links above work without it.</noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

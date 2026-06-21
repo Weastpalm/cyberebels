@@ -14,10 +14,11 @@ export const handler = async (event) => {
     if (!res.ok) return json(200, { error: `CISA returned ${res.status}.` });
     const data = await res.json();
     const all = (data.vulnerabilities || []).slice().sort((a, b) => (b.dateAdded || "").localeCompare(a.dateAdded || ""));
-    const items = all.slice(0, 15).map((v) => ({
+    const items = all.slice(0, 40).map((v) => ({
       cve: v.cveID, vendor: v.vendorProject, product: v.product,
       name: v.vulnerabilityName, dateAdded: v.dateAdded,
       ransomware: /known/i.test(v.knownRansomwareCampaignUse || ""),
+      shortDescription: (v.shortDescription || "").slice(0, 200),
     }));
     const out = { total: all.length, count: items.length, items };
     await cacheSet("kev-cache", "latest", out);

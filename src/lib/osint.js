@@ -114,3 +114,10 @@ export async function cisaKev() {
   if (r.unreachable) return { state: "unreachable" };
   return { state: "ok", ...(r.data || {}) };
 }
+
+// urlscan.io passive search — existing public scans for an IP/domain/URL.
+export async function urlscanSearch(type, value) {
+  const r = await getJSON(`/.netlify/functions/urlscan?type=${type}&value=${encodeURIComponent(value)}`);
+  if (r.unreachable) return { source: "urlscan", state: "unreachable" };
+  return { source: "urlscan", state: "ok", ...(r.data || {}) };
+}

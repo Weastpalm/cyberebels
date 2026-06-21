@@ -193,22 +193,22 @@ export default function Home() {
               </div>
 
               <h1 className="font-mono text-4xl font-extrabold leading-[1.04] tracking-tight sm:text-6xl">
-                Take back
+                Your free
                 <br />
-                your privacy.
+                cyber toolkit.
                 <br />
-                <span className="text-brand text-glow">Know who&apos;s watching.</span>
+                <span className="text-brand text-glow">Investigate. Expose. Defend.</span>
               </h1>
 
               <p className="mt-5 max-w-xl text-lg text-muted">
-                <span className="font-semibold text-ink">{SITE_NAME} is a free privacy toolkit.</span>{" "}
+                <span className="font-semibold text-ink">{SITE_NAME} is a free cybersecurity toolkit.</span>{" "}
                 See exactly what the web knows about you, investigate sketchy links and IPs with a
                 pro-grade OSINT console, and lock yourself down — no jargon, no sign-up, all in your browser.
               </p>
 
               <div className="mt-7 flex flex-wrap gap-3">
-                <Link to="/am-i-tracked" className="btn-primary">See what they know →</Link>
-                <Link to="/osint" className="btn-ghost">OSINT console</Link>
+                <Link to="/osint" className="btn-primary">Threat Center →</Link>
+                <Link to="/am-i-tracked" className="btn-ghost">See what they know</Link>
                 <Link to="/best-vpns" className="btn-ghost">Best VPNs</Link>
               </div>
               <p className="mt-4 font-mono text-xs text-faint">

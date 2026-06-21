@@ -5,8 +5,7 @@ import Logo from "./Logo.jsx";
 
 const THREAT_GROUPS = [
   { heading: "Investigate", links: [["/osint", "Investigate Console"]] },
-  { heading: "Phishing & web", links: [["/osint/email", "Email & Phishing"], ["/osint/domain", "Domain Intel"], ["/osint/redirects", "URL Redirects"], ["/osint/ssl", "SSL Inspector"], ["/osint/qr", "QR Scanner"]] },
-  { heading: "Feeds", links: [["/osint/intel", "Intel Radar"]] },
+  { heading: "Phishing & web", links: [["/osint/email", "Email & Phishing"], ["/osint/intel", "Intel Radar"], ["/osint/domain", "Domain Intel"], ["/osint/redirects", "URL Redirects"], ["/osint/ssl", "SSL Inspector"], ["/osint/qr", "QR Scanner"]] },
   { heading: "Utilities", links: [["/osint/decoder", "Decoder Bench"]] },
 ];
 const OSINT_GROUPS = [
@@ -92,12 +91,16 @@ export default function Navbar() {
           <div className="mx-auto flex max-w-6xl flex-col px-4 py-2">
             <NavLink to="/" end onClick={() => setOpen(false)} className={({ isActive }) => ["border-b border-line/60 py-3 font-mono text-sm", isActive ? "text-brand" : "text-ink"].join(" ")}>Home</NavLink>
             {ALL_MOBILE.map(([title, groups]) => (
-              <div key={title}>
-                <div className="px-0 pb-1 pt-3 font-mono text-[10px] uppercase tracking-[0.2em] text-brand">{title}</div>
-                {flat(groups).map(([to, l]) => (
-                  <NavLink key={to} to={to} end={to === "/osint" || to === "/pentest" || to === "/learn"} onClick={() => setOpen(false)} className={({ isActive }) => ["border-b border-line/60 py-2.5 font-mono text-sm", isActive ? "text-brand" : "text-muted"].join(" ")}>{l}</NavLink>
-                ))}
-              </div>
+              <details key={title} className="border-b border-line/60">
+                <summary className="flex cursor-pointer items-center justify-between py-3.5 font-mono text-sm font-bold text-ink">
+                  <span>{title}</span><span className="text-xs text-faint">▾</span>
+                </summary>
+                <div className="pb-2">
+                  {flat(groups).map(([to, l]) => (
+                    <NavLink key={to} to={to} end={to === "/osint" || to === "/pentest" || to === "/learn"} onClick={() => setOpen(false)} className={({ isActive }) => ["block rounded-md px-3 py-2.5 font-mono text-sm", isActive ? "bg-elevated/50 text-brand" : "text-muted"].join(" ")}>{l}</NavLink>
+                  ))}
+                </div>
+              </details>
             ))}
           </div>
         </div>
