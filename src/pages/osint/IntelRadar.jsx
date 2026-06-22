@@ -22,13 +22,21 @@ const FEEDS = [
   { tag: "ddos", title: "DDoS & Attack Trends", icon: (<svg {...sv}><path d="M3 12h3l2-7 4 14 2-7h3" /><path d="M19 12h2" /></svg>),
     desc: "Near-real-time global DDoS and attack trends — what's being targeted, attack types, and where traffic anomalies are spiking right now.",
     links: [["Cloudflare Radar ↗", "https://radar.cloudflare.com/security-and-attacks", true], ["Digital Attack Map ↗", "https://www.digitalattackmap.com/", true], ["Zone-H defacements ↗", "https://zone-h.org/", true]] },
+  { tag: "frameworks", title: "Frameworks & Benchmarks", icon: (<svg {...sv}><rect x="4" y="4" width="16" height="16" rx="1" /><path d="M4 9h16M9 4v16" /></svg>),
+    desc: "The playbooks defenders map against: MITRE ATT&CK for adversary tactics and techniques, and CIS Benchmarks for hardening systems to a known-good baseline.",
+    links: [["MITRE ATT&CK ↗", "https://attack.mitre.org/", true], ["CIS Benchmarks ↗", "https://www.cisecurity.org/cis-benchmarks", true]] },
 ];
+
+const GOV = {
+  desc: "Official advisories — and exactly where to report cybercrime. The FBI's IC3 is where individuals and businesses file complaints about fraud, scams and hacking; CISA publishes alerts and takes incident reports; and the MS-ISAC supports U.S. state, local, tribal & territorial government.",
+  links: [["⚠ Report to FBI IC3 ↗", "https://www.ic3.gov/", true, true], ["⚠ Report to CISA ↗", "https://www.cisa.gov/report", true, true], ["CISA advisories ↗", "https://www.cisa.gov/news-events/cybersecurity-advisories", true], ["MS-ISAC ↗", "https://www.cisecurity.org/ms-isac", true]],
+};
 
 function FeedLinks({ links }) {
   return (
     <div className="mt-4 flex flex-wrap gap-2">
-      {links.map(([label, to, ext]) => ext
-        ? <a key={to} href={to} target="_blank" rel="noopener noreferrer" className="btn-ghost px-3 py-2 text-xs">{label}</a>
+      {links.map(([label, to, ext, primary]) => ext
+        ? <a key={to} href={to} target="_blank" rel="noopener noreferrer" className={(primary ? "btn-primary" : "btn-ghost") + " px-3 py-2 text-xs"}>{label}</a>
         : <Link key={to} to={to} className="btn-primary px-3 py-2 text-xs">{label}</Link>)}
     </div>
   );
@@ -43,7 +51,23 @@ export default function IntelRadar() {
       <Seo path="/osint/intel" title="Intel Radar — Exploited CVEs, Ransomware, Dark Web & DDoS" description="A threat-intelligence radar: live actively-exploited CVEs (CISA KEV, ransomware-flagged) plus curated feeds for FortiBleed, dark-web exposure, ransomware gangs, IOCs and DDoS trends." keywords="threat intelligence feeds, cisa kev, actively exploited cve, ransomware tracker, ioc feed, ddos trends, fortibleed" />
       <PageHeader eyebrow="// threat center · intel radar" title="Intel" accent="Radar" intro="A live pulse of what's being exploited right now, plus curated links to the best free threat-intel sources for dark-web, ransomware, IOC and DDoS reporting." />
       <section className="mx-auto max-w-6xl px-4 pb-16">
+        {/* TOP: Government & Reporting — where to report cybercrime */}
+        <div className="panel-accent overflow-hidden border-brand/50 shadow-glow">
+          <div className="flex items-center gap-2 border-b border-line bg-danger/5 px-4 py-2.5 sm:px-5">
+            <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-danger">⚠ Victim of cybercrime? Report it here</span>
+          </div>
+          <div className="p-4 sm:p-6">
+            <div className="flex items-center gap-3">
+              <span className="flex h-11 w-11 flex-none items-center justify-center rounded-md border border-line bg-elevated text-brand"><svg {...sv} width="22" height="22"><path d="M3 21h18M5 21V10l7-4 7 4v11M10 21v-5h4v5" /></svg></span>
+              <div><h2 className="font-mono text-lg font-bold text-ink">Government &amp; Reporting</h2><span className="font-mono text-[10px] uppercase tracking-wider text-faint">official advisories &amp; where to report</span></div>
+            </div>
+            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted">{GOV.desc}</p>
+            <FeedLinks links={GOV.links} />
+          </div>
+        </div>
+
         {/* LIVE: CISA KEV */}
+        <div className="mt-8" />
         <div className="panel-accent overflow-hidden">
           <div className="console-bar"><span className="console-dot bg-danger/80" /><span className="console-dot bg-warn/80" /><span className="console-dot bg-brand/80" /><span className="ml-2 font-mono text-xs text-faint">cisa_kev.live — exploited in the wild</span>{kev.total ? <span className="ml-auto font-mono text-[10px] uppercase tracking-wider text-brand">{kev.total.toLocaleString()} known</span> : null}</div>
           <div className="p-4 sm:p-5">

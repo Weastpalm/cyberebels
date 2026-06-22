@@ -14,6 +14,9 @@ import AmITracked from "./pages/AmITracked.jsx";
 import Fingerprint from "./pages/Fingerprint.jsx";
 import AntiDetect from "./pages/AntiDetect.jsx";
 import Osint from "./pages/Osint.jsx";
+import ThreatHub from "./pages/osint/ThreatHub.jsx";
+import OsintPeople from "./pages/osint/PeopleHub.jsx";
+import PrivacyHub from "./pages/PrivacyHub.jsx";
 import OsintExposure from "./pages/osint/Exposure.jsx";
 import OsintBreach from "./pages/osint/Breach.jsx";
 import OsintFootprint from "./pages/osint/Footprint.jsx";
@@ -83,7 +86,10 @@ export default function App() {
             <Route path="/am-i-tracked" element={<AmITracked />} />
             <Route path="/fingerprint" element={<Fingerprint />} />
             <Route path="/anti-detect" element={<AntiDetect />} />
-            <Route path="/osint" element={<Osint />} />
+            <Route path="/osint" element={<ThreatHub />} />
+            <Route path="/osint/recon" element={<Osint />} />
+            <Route path="/osint/recon/:indicator" element={<Osint />} />
+            <Route path="/osint/people" element={<OsintPeople />} />
             <Route path="/osint/exposure" element={<OsintExposure />} />
             <Route path="/osint/breach" element={<OsintBreach />} />
             <Route path="/osint/footprint" element={<OsintFootprint />} />
@@ -114,6 +120,7 @@ export default function App() {
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/best-vpns" element={<VpnComparison />} />
+            <Route path="/privacy" element={<PrivacyHub />} />
             <Route path="/privacy-tools" element={<PrivacyTools />} />
             <Route path="/de-google" element={<DeGoogle />} />
             <Route path="/self-defense" element={<SelfDefense />} />

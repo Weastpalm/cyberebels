@@ -196,3 +196,12 @@
   .geo-pulse { animation: none !important; }
   .animate-blink, .animate-fade-up, .animate-ping, .animate-pulse-slow, .animate-sweep { animation: none !important; }
 }
+
+/* ---- mobile performance + horizontal-overflow safety ---- */
+html, body { overflow-x: hidden; }
+@media (max-width: 768px) {
+  body { animation: none !important; background-attachment: scroll; }
+  .surveil-grid { animation: none !important; }
+  .scanline { display: none !important; }
+  header.sticky { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background-color: rgb(var(--c-base)); }
+}

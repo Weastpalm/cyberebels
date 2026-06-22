@@ -23,22 +23,22 @@ const TONE = {
   mute: "border-line text-faint",
 };
 function Pill({ tone = "mute", children }) { return <span className={`chip ${TONE[tone]}`}>{children}</span>; }
-function Stat({ label, value, tone }) {
+function Stat({ label, short, value, tone }) {
   const c = tone === "bad" ? "text-danger" : tone === "warn" ? "text-warn" : tone === "good" ? "text-brand" : "text-ink";
-  return (<div className="rounded-md border border-line bg-base/40 p-2.5 text-center"><div className={`font-mono text-xl font-bold tabular-nums ${c}`}>{value}</div><div className="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-faint">{label}</div></div>);
+  return (<div className="min-w-0 rounded-md border border-line bg-base/40 p-1.5 text-center sm:p-2.5"><div className={`font-mono text-base font-bold tabular-nums sm:text-xl ${c}`}>{value}</div><div className="mt-0.5 truncate font-mono text-[9px] uppercase leading-tight tracking-wide text-faint sm:text-[10px] sm:tracking-wider"><span className="sm:hidden">{short || label}</span><span className="hidden sm:inline">{label}</span></div></div>);
 }
 
 function SourceCard({ name, logo, status, children }) {
   const map = { loading: ["mute", "querying…"], ok: ["good", "online"], needkey: ["warn", "needs key"], unreachable: ["mute", "offline"], none: ["mute", "no record"], busy: ["warn", "budget hit"] };
   const [tone, label] = map[status] || map.none;
   return (
-    <div className="panel overflow-hidden">
+    <div className="panel min-w-0 overflow-hidden">
       <div className="console-bar">
         {logo ? <BrandLogo slug={logo} name={name} size={16} className="!h-6 !w-6 !rounded-md" /> : <span className="console-dot bg-brand/70" />}
-        <span className="ml-1 font-mono text-[11px] text-faint">{name}</span>
-        <span className="ml-auto"><Pill tone={tone}>{label}</Pill></span>
+        <span className="ml-1 min-w-0 flex-1 truncate font-mono text-[11px] text-faint">{name}</span>
+        <span className="flex-none"><Pill tone={tone}>{label}</Pill></span>
       </div>
-      <div className="p-4">{children}</div>
+      <div className="p-3 sm:p-4">{children}</div>
     </div>
   );
 }
@@ -70,20 +70,20 @@ function VtBody({ d, type }) {
   const total = Object.values(d.stats).reduce((a, b) => a + b, 0);
   return (
     <div>
-      <div className="grid grid-cols-4 gap-2">
-        <Stat label="Malicious" value={d.stats.malicious} tone={d.stats.malicious ? "bad" : "ink"} />
-        <Stat label="Suspicious" value={d.stats.suspicious} tone={d.stats.suspicious ? "warn" : "ink"} />
-        <Stat label="Harmless" value={d.stats.harmless} tone="good" />
-        <Stat label="Clean/undet" value={d.stats.undetected} tone="ink" />
+      <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
+        <Stat label="Malicious" short="Mal" value={d.stats.malicious} tone={d.stats.malicious ? "bad" : "ink"} />
+        <Stat label="Suspicious" short="Susp" value={d.stats.suspicious} tone={d.stats.suspicious ? "warn" : "ink"} />
+        <Stat label="Harmless" short="Safe" value={d.stats.harmless} tone="good" />
+        <Stat label="Clean/undet" short="Undet" value={d.stats.undetected} tone="ink" />
       </div>
-      <dl className="mt-3 space-y-1 font-mono text-[11px]">
+      <dl className="mt-2.5 space-y-1 font-mono text-[11px]">
         <div className="flex justify-between gap-3"><dt className="text-faint">engines</dt><dd className="text-muted">{total} checked{d.cached ? " · cached" : ""}</dd></div>
-        {type === "file" && d.meaningfulName && <div className="flex justify-between gap-3"><dt className="text-faint">name</dt><dd className="truncate text-muted">{d.meaningfulName}</dd></div>}
+        {type === "file" && d.meaningfulName && <div className="flex justify-between gap-3"><dt className="flex-none text-faint">name</dt><dd className="min-w-0 truncate text-right text-muted">{d.meaningfulName}</dd></div>}
         {type === "file" && d.typeDescription && <div className="flex justify-between gap-3"><dt className="text-faint">type</dt><dd className="text-muted">{d.typeDescription}</dd></div>}
-        {d.asOwner && <div className="flex justify-between gap-3"><dt className="text-faint">network</dt><dd className="truncate text-right text-muted">{d.asOwner}</dd></div>}
+        {d.asOwner && <div className="flex justify-between gap-3"><dt className="flex-none text-faint">network</dt><dd className="min-w-0 truncate text-right text-muted">{d.asOwner}</dd></div>}
         {d.country && <div className="flex justify-between gap-3"><dt className="text-faint">country</dt><dd className="text-muted">{d.country}</dd></div>}
         {d.reputation !== null && d.reputation !== undefined && <div className="flex justify-between gap-3"><dt className="text-faint">reputation</dt><dd className={d.reputation < 0 ? "text-danger" : "text-muted"}>{d.reputation}</dd></div>}
-        {d.categories && d.categories.length > 0 && <div className="flex justify-between gap-3"><dt className="text-faint">categories</dt><dd className="truncate text-right text-muted">{[...new Set(d.categories)].slice(0, 3).join(", ")}</dd></div>}
+        {d.categories && d.categories.length > 0 && <div className="flex justify-between gap-3"><dt className="flex-none text-faint">categories</dt><dd className="min-w-0 truncate text-right text-muted">{[...new Set(d.categories)].slice(0, 3).join(", ")}</dd></div>}
       </dl>
       {gui}
     </div>
@@ -106,8 +106,8 @@ function AbuseBody({ d }) {
       <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-elevated"><div className={`h-full rounded-full ${score >= 50 ? "bg-danger" : score > 0 ? "bg-warn" : "bg-brand"}`} style={{ width: `${Math.max(2, score)}%` }} /></div>
       <dl className="mt-3 space-y-1 font-mono text-[11px]">
         <div className="flex justify-between gap-3"><dt className="text-faint">reports</dt><dd className="text-muted">{(d.totalReports ?? 0).toLocaleString()}</dd></div>
-        {d.usageType && <div className="flex justify-between gap-3"><dt className="text-faint">usage</dt><dd className="truncate text-right text-muted">{d.usageType}</dd></div>}
-        {d.isp && <div className="flex justify-between gap-3"><dt className="text-faint">isp</dt><dd className="truncate text-right text-muted">{d.isp}</dd></div>}
+        {d.usageType && <div className="flex justify-between gap-3"><dt className="flex-none text-faint">usage</dt><dd className="min-w-0 truncate text-right text-muted">{d.usageType}</dd></div>}
+        {d.isp && <div className="flex justify-between gap-3"><dt className="flex-none text-faint">isp</dt><dd className="min-w-0 truncate text-right text-muted">{d.isp}</dd></div>}
         <div className="flex justify-between gap-3"><dt className="text-faint">tor exit</dt><dd className={d.isTor ? "text-warn" : "text-muted"}>{d.isTor ? "yes" : "no"}</dd></div>
       </dl>
     </div>
@@ -121,7 +121,7 @@ function ShodanBody({ d }) {
     <div className="space-y-3">
       <div><div className="mb-1 font-mono text-[10px] uppercase tracking-wider text-faint">open ports ({d.ports.length})</div><div className="flex flex-wrap gap-1.5">{d.ports.length ? d.ports.map((p) => <Pill key={p} tone="info">{p}</Pill>) : <span className="font-mono text-xs text-muted">none</span>}</div></div>
       {d.vulns.length > 0 && (<div><div className="mb-1 font-mono text-[10px] uppercase tracking-wider text-danger">vulnerabilities ({d.vulns.length})</div><div className="flex flex-wrap gap-1.5">{d.vulns.slice(0, 10).map((c) => <Pill key={c} tone="bad">{c}</Pill>)}</div></div>)}
-      {d.hostnames.length > 0 && <div className="font-mono text-[11px]"><span className="text-faint">hostnames: </span><span className="text-muted">{d.hostnames.slice(0, 3).join(", ")}</span></div>}
+      {d.hostnames.length > 0 && <div className="break-all font-mono text-[11px]"><span className="text-faint">hostnames: </span><span className="text-muted">{d.hostnames.slice(0, 3).join(", ")}</span></div>}
       {d.tags.length > 0 && <div className="flex flex-wrap gap-1.5">{d.tags.map((t) => <Pill key={t}>{t}</Pill>)}</div>}
       <p className="font-mono text-[10px] text-faint">Shodan InternetDB · free · updated weekly</p>
     </div>
@@ -133,10 +133,10 @@ function UrlscanBody({ d }) {
   if (d.error) return <Note>{d.error}</Note>;
   if (!d.found) return <Note>No public scans indexed on urlscan.io. <a href="https://urlscan.io/" target="_blank" rel="noopener noreferrer" className="link-accent">Submit a scan ↗</a></Note>;
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       {d.results.map((x) => (
-        <a key={x.id} href={`https://urlscan.io/result/${x.id}/`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 overflow-hidden rounded-md border border-line bg-elevated/40 p-2 hover:border-brand">
-          <img src={`https://urlscan.io/screenshots/${x.id}.png`} alt="" loading="lazy" className="h-10 w-16 flex-none rounded border border-line object-cover" />
+        <a key={x.id} href={`https://urlscan.io/result/${x.id}/`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 overflow-hidden rounded-md border border-line bg-elevated/40 p-2 hover:border-brand">
+          <img src={`https://urlscan.io/screenshots/${x.id}.png`} alt="" loading="lazy" className="h-9 w-14 flex-none rounded border border-line object-cover sm:h-10 sm:w-16" />
           <span className="min-w-0 flex-1"><span className="block truncate font-mono text-[11px] text-ink">{x.url}</span><span className="block truncate font-mono text-[10px] text-faint">{[x.status && ("HTTP " + x.status), x.server, x.network, x.country, x.time && x.time.slice(0, 10)].filter(Boolean).join(" · ")}</span></span>
           <span className="flex-none font-mono text-[10px] text-faint">\u2197</span>
         </a>
@@ -179,7 +179,7 @@ function HistoryList({ items, onClear }) {
         {items.map((e) => {
           const tone = e.tone === "bad" ? "text-danger" : e.tone === "warn" ? "text-warn" : e.tone === "good" ? "text-brand" : "text-muted";
           const ratio = e.total != null ? `${e.mal}/${e.total}` : "—";
-          const to = e.type === "url" ? `/osint?q=${encodeURIComponent(e.indicator)}` : `/osint/${encodeURIComponent(e.indicator)}`;
+          const to = e.type === "url" ? `/osint/recon?q=${encodeURIComponent(e.indicator)}` : `/osint/recon/${encodeURIComponent(e.indicator)}`;
           return (
             <li key={e.indicator + e.type + e.ts}>
               <Link to={to} className="flex items-center gap-3 px-4 py-2 transition-colors hover:bg-elevated/40">
@@ -232,13 +232,13 @@ async function geoFor(type, value) {
 function GeoBlock({ geo }) {
   if (!geo || !geo.ok || typeof geo.lat !== "number") return null;
   return (
-    <div className="md:col-span-2">
-      <div className="grid gap-4 sm:grid-cols-[340px_1fr]">
+    <div className="min-w-0 md:col-span-2">
+      <div className="grid min-w-0 gap-4 sm:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
         <GeoConsole lat={geo.lat} lon={geo.lon} label={[geo.city, geo.country].filter(Boolean).join(", ")} sub={geo.resolvedFrom ? `resolved ${geo.resolvedFrom} → ${geo.resolvedIp}` : geo.timezone ? `TZ ${geo.timezone}` : null} />
         <dl className="space-y-1.5 self-center font-mono text-xs">
-          <div className="flex justify-between gap-3"><dt className="text-faint">location</dt><dd className="text-right text-ink">{geo.flag} {[geo.city, geo.region, geo.country].filter(Boolean).join(", ")}</dd></div>
+          <div className="flex justify-between gap-3"><dt className="flex-none text-faint">location</dt><dd className="min-w-0 truncate text-right text-ink">{geo.flag} {[geo.city, geo.region, geo.country].filter(Boolean).join(", ")}</dd></div>
           <div className="flex justify-between gap-3"><dt className="text-faint">coordinates</dt><dd className="tabular-nums text-muted">{geo.lat?.toFixed(4)}, {geo.lon?.toFixed(4)}</dd></div>
-          {geo.isp && <div className="flex justify-between gap-3"><dt className="text-faint">isp</dt><dd className="text-right text-muted">{geo.isp}</dd></div>}
+          {geo.isp && <div className="flex justify-between gap-3"><dt className="flex-none text-faint">isp</dt><dd className="min-w-0 truncate text-right text-muted">{geo.isp}</dd></div>}
           {geo.asn && <div className="flex justify-between gap-3"><dt className="text-faint">asn</dt><dd className="text-muted">{geo.asn}</dd></div>}
         </dl>
       </div>
@@ -260,8 +260,8 @@ function Investigator({ initialQuery = "", onResult, preset }) {
     const query = (qOverride ?? val).trim();
     const t = tOverride ?? type;
     if (!query) return;
-    if (t === "url") navigate(`/osint?q=${encodeURIComponent(query)}`);
-    else navigate(`/osint/${encodeURIComponent(query)}`);
+    if (t === "url") navigate(`/osint/recon?q=${encodeURIComponent(query)}`);
+    else navigate(`/osint/recon/${encodeURIComponent(query)}`);
   }
 
   async function run(query, t) {
@@ -325,22 +325,22 @@ function Investigator({ initialQuery = "", onResult, preset }) {
         <div className={`mt-4 flex flex-wrap items-center gap-3 rounded-xl border p-4 ${verdict.tone === "bad" ? "border-danger/40 bg-danger/5" : verdict.tone === "warn" ? "border-warn/40 bg-warn/5" : "border-brand/40 bg-brand/5"}`}>
           <Pill tone={verdict.tone === "bad" ? "bad" : verdict.tone === "warn" ? "warn" : "good"}>{verdict.badge}</Pill>
           <span className={`font-mono text-sm font-bold ${verdict.tone === "bad" ? "text-danger" : verdict.tone === "warn" ? "text-warn" : "text-brand"}`}>{verdict.text}</span>
-          <span className="ml-auto truncate font-mono text-xs text-faint">{r.query}</span>
+          <span className="ml-auto min-w-0 truncate font-mono text-xs text-faint">{r.query}</span>
         </div>
       )}
 
       {!running && r && (
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
+        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
           <SourceCard name="virustotal · 90+ engines" logo="virustotal" status={cardStatus(r.vt, running)}><VtBody d={r.vt} type={r.type} /></SourceCard>
           {isIp && <SourceCard name="abuseipdb · reputation" logo="abuseipdb" status={cardStatus(r.abuse, running)}><AbuseBody d={r.abuse} /></SourceCard>}
           {isIp && <SourceCard name="shodan · exposed services" logo="shodan" status={cardStatus(r.shodan, running)}><ShodanBody d={r.shodan} /></SourceCard>}
           {isIp && r.hostName && (
-            <div className="md:col-span-2">
+            <div className="min-w-0 md:col-span-2">
               <SourceCard name={`virustotal · auto deep-dive on ${r.hostName}`} logo="virustotal" status={cardStatus(r.hostVt, running)}><VtBody d={r.hostVt} type="domain" /></SourceCard>
             </div>
           )}
           {r.urlscan && (
-            <div className="md:col-span-2">
+            <div className="min-w-0 md:col-span-2">
               <SourceCard name="urlscan.io · recent page scans" status={cardStatus(r.urlscan, running)}><UrlscanBody d={r.urlscan} /></SourceCard>
             </div>
           )}
@@ -393,10 +393,11 @@ export default function Osint() {
 
   return (
     <div className="surveil-grid">
-      <Seo path="/osint" title="OSINT Console — Investigate IPs, Domains, URLs & File Hashes" description="A SOC-grade OSINT console. Correlate VirusTotal, AbuseIPDB and Shodan on any IP, domain, URL or file hash, with live geolocation — free, in your browser." keywords="OSINT console, SOC analyst tool, ip reputation, virustotal, abuseipdb, shodan, threat intelligence lookup, file hash lookup" jsonLd={howToLd} />
+      <Seo path="/osint/recon" title="Threat Lookup — Check IPs, Domains, URLs & File Hashes for Threats" description="A SOC-grade OSINT console. Correlate VirusTotal, AbuseIPDB and Shodan on any IP, domain, URL or file hash, with live geolocation — free, in your browser." keywords="OSINT console, SOC analyst tool, ip reputation, virustotal, abuseipdb, shodan, threat intelligence lookup, file hash lookup" jsonLd={howToLd} />
 
       <header className="mx-auto max-w-6xl px-4 pb-6 pt-14">
-        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-brand/40 bg-brand/5 px-3 py-1"><span className="font-mono text-[11px] uppercase tracking-wider text-brand">★ Flagship · SOC investigation console</span></div>
+        <div className="mb-3"><Link to="/osint" className="inline-flex items-center gap-2 font-mono text-xs text-faint transition-colors hover:text-brand">← Threat Center</Link></div>
+        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-brand/40 bg-brand/5 px-3 py-1"><span className="font-mono text-[11px] uppercase tracking-wider text-brand">★ Threat Lookup · the Threat Center flagship</span></div>
         <p className="eyebrow mb-3">// soc · threat investigation console</p>
         <h1 className="font-mono text-3xl font-extrabold tracking-tight sm:text-5xl">Investigate. Correlate. <span className="text-brand text-glow">Verdict.</span></h1>
         <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">A multi-source console for analysts. Drop an <span className="text-ink">IP, domain, URL, or file hash</span> and Cyber Rebels queries VirusTotal, AbuseIPDB and Shodan in parallel — then geolocates it. Every signal on one screen.</p>
@@ -411,27 +412,11 @@ export default function Osint() {
       <div className="mx-auto max-w-6xl px-4"><AdSlot slot="osint-mid" /></div>
 
       <section className="mx-auto max-w-6xl px-4 py-8">
-        <div className="mb-4 flex items-baseline gap-3"><span className="font-mono text-sm tabular-nums text-brand">//</span><div><h2 className="font-mono text-xl font-bold tracking-tight">Threat Center tools</h2><p className="mt-1 text-sm text-muted">Phishing, domain, URL, certificate and decoding tools — all in the Center.</p></div></div>
-        <div className="grid gap-3 sm:grid-cols-3">
-          {ANALYST_TOOLS.map((t) => (
-            <Link key={t.to} to={t.to} className="panel group flex flex-col p-5 transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-glow">
-              <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 flex-none items-center justify-center rounded-md border border-line bg-elevated text-brand transition-colors group-hover:border-brand">{t.icon}</span>
-                <h3 className="font-mono text-base font-bold text-ink group-hover:text-brand">{t.title}</h3>
-              </div>
-              <p className="mt-2 flex-1 text-sm leading-snug text-muted">{t.desc}</p>
-              <span className="mt-3 font-mono text-xs text-brand">Open →</span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-4 py-8">
-        <div className="mb-4 flex items-baseline gap-3"><span className="font-mono text-sm tabular-nums text-brand">//</span><div><h2 className="font-mono text-xl font-bold tracking-tight">Audit your own exposure</h2><p className="mt-1 text-sm text-muted">Investigation is for infrastructure. These turn the lens on you — each on its own page.</p></div></div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {SUBPAGES.map((s) => (<Link key={s.to} to={s.to} className="panel group flex flex-col p-5 transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-glow"><span className="font-mono text-[11px] tabular-nums text-faint">{s.n}</span><h3 className="mt-2 font-mono text-base font-bold text-ink group-hover:text-brand">{s.title}</h3><p className="mt-1 flex-1 text-sm leading-snug text-muted">{s.desc}</p><span className="mt-3 font-mono text-xs text-brand">Open →</span></Link>))}
-        </div>
-        <div className="mt-5 rounded-xl border border-line/70 bg-elevated/40 p-4 text-sm text-faint"><span className="font-mono text-muted">// ground rule:</span> investigate <strong className="text-muted">infrastructure</strong> (IPs, domains, links, hashes) freely — that&apos;s defense. The exposure tools above are for auditing <strong className="text-muted">your own</strong> footprint. Profiling other people without consent is surveillance, not what we&apos;re here for.</div>
+        <Link to="/osint" className="panel group flex flex-wrap items-center gap-x-3 gap-y-1 p-5 transition-all hover:border-brand hover:shadow-glow">
+          <span className="font-mono text-sm font-bold text-ink group-hover:text-brand">← Back to the Threat Center</span>
+          <span className="min-w-0 text-sm text-muted">Intel Radar, Domain Intel, Email &amp; Phishing, SSL, QR, Decoder and more — all organized in the hub.</span>
+          <span className="ml-auto flex-none font-mono text-xs text-brand">All tools →</span>
+        </Link>
       </section>
     </div>
   );

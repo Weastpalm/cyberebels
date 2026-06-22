@@ -23,6 +23,16 @@ function BestPick() {
   );
 }
 
+function TrustScore({ n, size = "sm" }) {
+  const tone = n >= 90 ? "border-brand/50 text-brand" : n >= 80 ? "border-info/50 text-info" : "border-warn/50 text-warn";
+  const pad = size === "lg" ? "px-2.5 py-1 text-sm" : "px-2 py-0.5 text-xs";
+  return (
+    <span className={`inline-flex items-baseline gap-0.5 rounded-md border font-mono font-bold ${pad} ${tone}`} title={`Trust score ${n}/100`}>
+      {n}<span className="text-[10px] font-normal text-faint">/100</span>
+    </span>
+  );
+}
+
 export default function VpnComparison() {
   return (
     <div>
@@ -40,6 +50,32 @@ export default function VpnComparison() {
       />
 
       <div className="mx-auto max-w-6xl px-4">
+        {/* Editor's choice — NordVPN advertisement */}
+        <div className="panel-accent relative mb-8 overflow-hidden border-brand/50 p-6 shadow-glow sm:p-8">
+          <span className="absolute right-0 top-0 rounded-bl-lg bg-brand px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-onbrand">★ Editor&apos;s choice</span>
+          <div className="grid items-center gap-6 md:grid-cols-[1.4fr_1fr]">
+            <div>
+              <div className="flex flex-wrap items-center gap-3">
+                <BrandLogo slug="nordvpn" name="NordVPN" size={34} />
+                <h2 className="font-mono text-2xl font-bold">NordVPN</h2>
+                <TrustScore n={95} size="lg" />
+              </div>
+              <p className="mt-3 max-w-xl text-muted">Our #1 pick. Independently-audited no-logs, thousands of RAM-only servers across 110+ countries, and built-in <span className="text-ink">Threat Protection</span> that blocks malware, trackers and malicious sites before they load. One account covers up to 10 devices.</p>
+              <ul className="mt-4 grid gap-2 font-mono text-sm text-muted sm:grid-cols-2">
+                <li className="flex items-center gap-2"><span className="text-brand">✓</span> Audited no-logs policy</li>
+                <li className="flex items-center gap-2"><span className="text-brand">✓</span> Blocks malware &amp; trackers</li>
+                <li className="flex items-center gap-2"><span className="text-brand">✓</span> Fast NordLynx protocol</li>
+                <li className="flex items-center gap-2"><span className="text-brand">✓</span> 30-day money-back guarantee</li>
+              </ul>
+            </div>
+            <div className="flex flex-col gap-3">
+              <AffiliateButton to="nordvpn" className="w-full">Get the NordVPN deal →</AffiliateButton>
+              <AffiliateButton to="nordpass" variant="ghost" className="w-full">+ Add NordPass password manager</AffiliateButton>
+              <p className="text-center font-mono text-[10px] text-faint">Affiliate links — they support Cyber Rebels at no extra cost to you.</p>
+            </div>
+          </div>
+        </div>
+
         {/* Desktop table */}
         <div className="panel hidden overflow-hidden lg:block">
           <table className="w-full text-left text-sm">
@@ -48,6 +84,7 @@ export default function VpnComparison() {
                 <th className="px-5 py-4">VPN</th>
                 <th className="px-5 py-4">Price</th>
                 <th className="px-5 py-4">No-logs</th>
+                <th className="px-5 py-4">Trust</th>
                 <th className="px-5 py-4">Speed</th>
                 <th className="px-5 py-4">Best for</th>
                 <th className="px-5 py-4"></th>
@@ -68,6 +105,7 @@ export default function VpnComparison() {
                     <div className="text-xs text-faint">{v.priceNote}</div>
                   </td>
                   <td className="px-5 py-5 text-muted">{v.noLogs}</td>
+                  <td className="px-5 py-5"><TrustScore n={v.trust} /><div className="mt-1.5 max-w-[15rem] text-xs leading-snug text-faint">{v.trustReason}</div></td>
                   <td className="px-5 py-5"><Speed n={v.speed} /></td>
                   <td className="px-5 py-5 text-muted">{v.bestFor}</td>
                   <td className="px-5 py-5">
@@ -98,6 +136,7 @@ export default function VpnComparison() {
                 <div><div className="mono-label">Price</div><div className="font-mono font-semibold text-brand">{v.price}</div><div className="text-xs text-faint">{v.priceNote}</div></div>
                 <div><div className="mono-label">Speed</div><Speed n={v.speed} /></div>
               </div>
+              <div className="mt-3 text-sm"><div className="mono-label">Trust score</div><TrustScore n={v.trust} /><div className="mt-1.5 text-xs leading-snug text-faint">{v.trustReason}</div></div>
               <div className="mt-3 text-sm"><div className="mono-label">No-logs</div><div className="text-muted">{v.noLogs}</div></div>
               <div className="mt-3 text-sm"><div className="mono-label">Best for</div><div className="text-muted">{v.bestFor}</div></div>
               <div className="mt-4">
@@ -116,7 +155,7 @@ export default function VpnComparison() {
         <div className="panel my-8 p-7 sm:p-9">
           <h2 className="font-mono text-xl font-bold">How We Choose</h2>
           <p className="mt-3 max-w-3xl text-muted">
-            We weight four things, in this order: a <span className="text-ink">no-logs policy that's actually been audited</span> by an outside firm (a promise isn't proof); <span className="text-ink">jurisdiction</span> (where the company is based decides who can legally demand your data); <span className="text-ink">real-world speed</span> on everyday connections; and <span className="text-ink">honest pricing</span> without renewal traps. We don't rank by who pays the biggest commission — Mullvad is on this list and runs no affiliate program at all.
+            We weight four things, in this order: a <span className="text-ink">no-logs policy that's actually been audited</span> by an outside firm (a promise isn't proof); <span className="text-ink">jurisdiction</span> (where the company is based decides who can legally demand your data); <span className="text-ink">real-world speed</span> on everyday connections; and <span className="text-ink">honest pricing</span> without renewal traps. The <span className="text-ink">trust score</span> on each VPN rolls those factors into a single 0&ndash;100 number so you can compare at a glance. We don't rank by who pays the biggest commission — Mullvad is on this list and runs no affiliate program at all.
           </p>
         </div>
       </div>

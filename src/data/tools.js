@@ -37,6 +37,7 @@ export const TOOL_CATEGORIES = [
     replaces: "LastPass / browser-saved passwords",
     why: "Reused passwords and breached managers are how accounts get drained.",
     tools: [
+      { name: "NordPass", logo: "nordpass", affiliateKey: "nordpass", blurb: "From the Nord Security team — zero-knowledge vault with passkeys, a data-breach scanner, and secure sharing." },
       { name: "Bitwarden", logo: "bitwarden", affiliateKey: "bitwarden", blurb: "Open source, audited, free for unlimited passwords across devices." },
       { name: "1Password", logo: "1password", affiliateKey: "onepassword", blurb: "Polished, family-friendly, great for non-technical households." },
     ],

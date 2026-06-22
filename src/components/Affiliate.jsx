@@ -9,7 +9,7 @@
  */
 export const AFFILIATE_LINKS = {
   // VPNs
-  nordvpn: "https://nordvpn.com/", // PLACEHOLDER — replace with your affiliate link
+  nordvpn: "https://go.nordvpn.net/aff_c?offer_id=15&aff_id=151110&url_id=902", // NordVPN affiliate
   surfshark: "https://surfshark.com/", // PLACEHOLDER
   expressvpn: "https://www.expressvpn.com/", // PLACEHOLDER
   protonvpn: "https://protonvpn.com/", // PLACEHOLDER
@@ -25,10 +25,12 @@ export const AFFILIATE_LINKS = {
   bitwarden: "https://bitwarden.com/", // PLACEHOLDER
   onepassword: "https://1password.com/", // PLACEHOLDER
   signal: "https://signal.org/",
+
+  // Nord Security affiliate
+  nordpass: "https://go.nordpass.io/aff_c?offer_id=488&aff_id=151110&url_id=9356",
 };
 
-const PLACEHOLDER_NOTE =
-  "Placeholder affiliate link — swap in your real link in src/components/Affiliate.jsx";
+const PLACEHOLDER_NOTE = "Affiliate link — we may earn a commission at no extra cost to you.";
 
 export function AffiliateButton({ to, children, variant = "primary", className = "" }) {
   const href = AFFILIATE_LINKS[to] || "#";

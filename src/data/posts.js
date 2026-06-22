@@ -3,6 +3,63 @@
 
 export const POSTS = [
   {
+    slug: "where-to-report-cybercrime",
+    title: "Been Hacked or Scammed? Here's Exactly Where to Report Cybercrime",
+    description:
+      "Official advisories and where to report cybercrime: CISA alerts, the MS-ISAC for state & local government, and the FBI's IC3 for filing complaints \u2014 what each is, when to use it, and how to file a report that actually goes somewhere.",
+    date: "2026-06-22",
+    readMins: 7,
+    tags: ["reporting", "government"],
+    body: [
+      { type: "p", text: "When something goes wrong online \u2014 a drained account, a ransomware note, a wire that went to a stranger \u2014 most people freeze and tell no one. That is exactly what the criminals count on. Reporting fast does two things: it gives investigators the data they need to connect cases, and in fraud cases it can be the difference between freezing your money and losing it. Here is who to contact, and what each one actually does." },
+      { type: "callout", tone: "info", text: "This guide focuses on U.S. reporting channels. If you are outside the U.S., the same steps apply \u2014 report to your national cybercrime unit or CERT and your local police instead (for example, Action Fraud in the UK or the ACSC in Australia)." },
+
+      { type: "h2", text: "The three you'll actually use" },
+      { type: "p", text: "Three names cover almost everything. The **FBI's IC3** is where individuals and businesses file complaints about online crime. **CISA** publishes advisories and takes reports of attacks on systems and infrastructure. The **MS-ISAC** is the support line for U.S. state, local, tribal and territorial (SLTT) government bodies. Pick by who you are and what was hit." },
+
+      { type: "h2", text: "FBI IC3 \u2014 file a complaint" },
+      { type: "p", text: "The Internet Crime Complaint Center (ic3.gov) is the FBI's front door for internet crime. If you lost money or data to an online scam or intrusion, this is the primary place to file. Your complaint is routed to the right field office and pooled with others \u2014 many takedowns start as a stack of IC3 reports that share one small detail." },
+      { type: "ul", items: [
+        "Business email compromise (BEC) and fraudulent wire transfers",
+        "Ransomware and extortion demands",
+        "Investment, crypto and romance scams",
+        "Phishing that led to account takeover or identity theft",
+        "Tech-support and government-impersonation fraud",
+      ]},
+      { type: "callout", tone: "good", text: "If money was just wired, file with IC3 immediately. The IC3 Recovery Asset Team can ask banks to freeze fraudulent transfers \u2014 but it works best when reported within about 72 hours, before the funds are moved on. Speed matters more than a perfect write-up." },
+
+      { type: "h2", text: "CISA \u2014 advisories and incident reporting" },
+      { type: "p", text: "The Cybersecurity and Infrastructure Security Agency (cisa.gov) is the U.S. government's defensive hub. For most people CISA is where you read **advisories** \u2014 plain warnings about actively exploited vulnerabilities and live threats. If you run systems and you've had an intrusion, or you spot something affecting critical services, CISA also takes incident reports at cisa.gov/report and shares the intelligence with defenders nationwide." },
+
+      { type: "h2", text: "MS-ISAC \u2014 for state, local, tribal & territorial government" },
+      { type: "p", text: "If you work for a U.S. city, county, school district, utility or other SLTT government body, the Multi-State Information Sharing and Analysis Center (run by the Center for Internet Security) is built for you. It operates a 24/7 security operations center, shares threat intelligence, and helps members respond to incidents. Many public-sector teams call the MS-ISAC SOC first, then file with IC3." },
+
+      { type: "h2", text: "Don't forget the FTC (U.S. consumers)" },
+      { type: "p", text: "For everyday fraud and scams, the Federal Trade Commission's ReportFraud.ftc.gov captures consumer complaints that feed enforcement. If your identity was stolen, IdentityTheft.gov is the standout resource \u2014 it builds you a personalized recovery plan and the official affidavits you'll need to dispute fraudulent accounts." },
+
+      { type: "h2", text: "Before you file: gather this" },
+      { type: "steps", items: [
+        { title: "Save the evidence", text: "Screenshot emails, texts, transaction pages and error messages. Keep original emails \u2014 their headers carry the trail. Don't delete anything." },
+        { title: "Map the money", text: "Note every amount, date, account number, wallet address and reference. For wires, get the exact send time \u2014 the recovery window is counted in hours." },
+        { title: "Write a short timeline", text: "A few plain sentences: what happened, when you noticed, and what you did. Investigators act on a clear timeline far faster than a panicked paragraph." },
+        { title: "Lock things down", text: "Change passwords from a clean device, turn on two-factor authentication, and call your bank or card issuer. Reporting and securing happen in parallel, not one after the other." },
+      ]},
+
+      { type: "h2", text: "Where to report \u2014 the links" },
+      { type: "links", items: [
+        { label: "FBI IC3 \u2014 file a complaint", url: "https://www.ic3.gov/", note: "Primary: online crime, fraud, ransomware, account takeover" },
+        { label: "Report to CISA", url: "https://www.cisa.gov/report", note: "Attacks on systems & infrastructure; incident reporting" },
+        { label: "CISA advisories", url: "https://www.cisa.gov/news-events/cybersecurity-advisories", note: "Live warnings on exploited vulnerabilities" },
+        { label: "MS-ISAC", url: "https://www.cisecurity.org/ms-isac", note: "For U.S. state, local, tribal & territorial government" },
+        { label: "FTC \u2014 ReportFraud", url: "https://reportfraud.ftc.gov/", note: "Consumer scams & fraud" },
+        { label: "IdentityTheft.gov", url: "https://www.identitytheft.gov/", note: "Identity-theft recovery plan & affidavits" },
+      ]},
+      { type: "callout", tone: "warn", text: "If you're in immediate danger, or money is actively leaving your accounts right now, call your bank and local police first \u2014 then file online. Reports document the crime; they are not an emergency response." },
+
+      { type: "p", text: "Want to watch what's being exploited before it reaches you? Our **Intel Radar** pulls the live CISA Known Exploited Vulnerabilities feed and links straight to these reporting channels, so the advisory and the place to report sit side by side." },
+    ],
+  },
+  {
     slug: "fingerprinting-bigger-than-cookies",
     title: "Your Browser Fingerprint Is a Bigger Deal Than Cookies",
     description:

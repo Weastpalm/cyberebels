@@ -5,8 +5,8 @@ import AdSlot from "../components/AdSlot.jsx";
 import GeoConsole from "../components/GeoConsole.jsx";
 import Logo from "../components/Logo.jsx";
 import BrandLogo from "../components/BrandLogo.jsx";
-import { useTheme } from "../lib/theme.jsx";
 import { getIpInfo, getBrowserInfo, getOsInfo, getEnvSignals } from "../lib/detect.js";
+import { useTheme } from "../lib/theme.jsx";
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from "../lib/site.js";
 
 const ic = { width: 22, height: 22, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round", strokeLinejoin: "round" };
@@ -60,14 +60,14 @@ function InteractiveConsole() {
         { t: "kv", k: "DO-NOT-TRACK", v: sig.doNotTrack ? "enabled" : "OFF" },
         { t: "alert", k: "STATUS", v: "NOT ANONYMOUS" },
       ];
-      seq.forEach((l, i) => setTimeout(() => { if (!cancelled) setOut((p) => [...p, l]); }, 150 * (i + 1)));
+      seq.forEach((l, i) => setTimeout(() => { if (!cancelled) setOut((pr) => [...pr, l]); }, 150 * (i + 1)));
     })();
     return () => { cancelled = true; };
   }, []);
 
   useEffect(() => { if (bodyRef.current) bodyRef.current.scrollTop = bodyRef.current.scrollHeight; }, [out]);
 
-  function print(...lines) { setOut((p) => [...p, ...lines]); }
+  function print(...lines) { setOut((pr) => [...pr, ...lines]); }
   function run(raw) {
     const c = raw.trim();
     if (!c) return;
@@ -75,9 +75,10 @@ function InteractiveConsole() {
     const lc = c.toLowerCase();
     const goto = (path, msg) => { print({ t: "ok", text: msg }); setTimeout(() => navigate(path), 480); };
     if (lc === "help" || lc === "?") {
-      print({ t: "out", text: "commands: osint · vpn · tracked · fingerprint · guides · whoami · neofetch · clear" });
+      print({ t: "out", text: "commands: lookup · osint · vpn · tracked · fingerprint · guides · whoami · neofetch · clear" });
       print({ t: "out", text: "tip: type a tool name to jump there — and a few commands are hidden…" });
-    } else if (lc === "osint" || lc === "investigate" || lc === "scan" || lc === "threat center" || lc === "threatcenter" || lc === "threat" || lc === "center") goto("/osint", "> launching Threat Center console…");
+    } else if (lc === "lookup" || lc === "investigate" || lc === "scan" || lc === "recon" || lc === "threat lookup") goto("/osint/recon", "> launching Threat Lookup…");
+    else if (lc === "osint" || lc === "threat center" || lc === "threatcenter" || lc === "threat" || lc === "center") goto("/osint", "> opening the Threat Center…");
     else if (lc === "vpn" || lc === "vpns") goto("/best-vpns", "> opening VPN comparison…");
     else if (lc === "tracked" || lc === "am-i-tracked") goto("/am-i-tracked", "> running tracking report…");
     else if (lc === "fingerprint" || lc === "fp") goto("/fingerprint", "> reading your fingerprint…");
@@ -98,7 +99,7 @@ function InteractiveConsole() {
     else if (lc === "pwd") print({ t: "out", text: "/home/rebel/secure" });
     else if (lc === "about" || lc === "cyber rebels" || lc === "cyberrebels") print({ t: "out", text: "Cyber Rebels — a free privacy & OSINT toolkit. The tools the watchers would rather you never found." });
     else if (lc === "neofetch") { print({ t: "ok", text: "rebel@cyber-rebels" }); print({ t: "out", text: "os " + (env ? env.os : "-") + " · shell recon.sh · uptime: always watching" }); print({ t: "out", text: "ip " + (env && env.ip.ok ? env.ip.ip : "-") + " · privacy: in your hands" }); }
-    else if (lc === "nmap" || lc.startsWith("nmap ")) { print({ t: "out", text: "starting recon scan…" }); print({ t: "out", text: "22/tcp open ssh · 443/tcp open https · 8080/tcp filtered" }); print({ t: "warn", text: "(simulated — run the OSINT console on a real IP for live ports)" }); }
+    else if (lc === "nmap" || lc.startsWith("nmap ")) { print({ t: "out", text: "starting recon scan…" }); print({ t: "out", text: "22/tcp open ssh · 443/tcp open https · 8080/tcp filtered" }); print({ t: "warn", text: "(simulated — run Threat Lookup on a real IP for live ports)" }); }
     else if (lc === "ping" || lc.startsWith("ping ")) print({ t: "out", text: "PONG · you are online, and so is everyone watching you." });
     else if (lc === "coffee" || lc === "brew") print({ t: "out", text: "c[_] brewing… stay caffeinated, stay paranoid." });
     else if (lc === "42") print({ t: "out", text: "the answer to life, the universe, and your threat model." });
@@ -107,7 +108,7 @@ function InteractiveConsole() {
     else if (lc === "roll" || lc === "dice") print({ t: "out", text: "you rolled a " + (1 + Math.floor(Math.random() * 20)) + " (d20)." });
     else if (lc === "hack" || lc === "hack the planet") print({ t: "ok", text: "access granted… kidding. real hacking is reading the docs — try `guides`." });
     else if (lc.startsWith("rm -rf")) print({ t: "err", text: "permission denied. the rebellion protects its own." });
-    else if (lc === "exit" || lc === "quit" || lc === "logout") print({ t: "warn", text: "no logging out of the surveillance economy — but you can fight it. type `osint`." });
+    else if (lc === "exit" || lc === "quit" || lc === "logout") print({ t: "warn", text: "no logging out of the surveillance economy — but you can fight it. type `lookup`." });
     else if (lc === "konami") print({ t: "ok", text: "up up down down left right left right B A — +30 privacy lives." });
     else if (lc === "banner") { print({ t: "ok", text: "[ C Y B E R ]" }); print({ t: "ok", text: "[ R E B E L S ]" }); }
     else print({ t: "err", text: `command not found: ${c} — type 'help'` });
@@ -118,18 +119,18 @@ function InteractiveConsole() {
 
   return (
     <div className="space-y-3">
-      <div className="panel-accent overflow-hidden font-mono text-[13px]">
+      <div className="panel-accent overflow-hidden font-mono text-[12px] sm:text-[13px]">
         <div className="console-bar">
           <span className="console-dot bg-danger/80" />
           <span className="console-dot bg-warn/80" />
           <span className="console-dot bg-brand/80" />
-          <span className="ml-2 text-xs text-faint">what_every_site_sees.sh — interactive</span>
+          <span className="ml-2 min-w-0 flex-1 truncate text-xs text-faint">what_every_site_sees.sh — interactive</span>
         </div>
-        <div ref={bodyRef} onClick={() => inputRef.current?.focus()} className="h-[360px] cursor-text space-y-1 overflow-y-auto p-4 sm:p-5" aria-live="polite">
+        <div ref={bodyRef} onClick={() => inputRef.current?.focus()} className="h-[340px] cursor-text space-y-1 overflow-y-auto overflow-x-hidden break-words p-3 sm:p-5" aria-live="polite">
           {out.map((l, i) => <div key={i} className="animate-fade-up break-words">{<ConsoleLine l={l} />}</div>)}
           <form onSubmit={onSubmit} className="flex items-center gap-2 pt-1">
-            <span className="text-brand">visitor@cyber-rebels<span className="text-faint">:~$</span></span>
-            <input ref={inputRef} value={cmd} onChange={(e) => setCmd(e.target.value)} spellCheck="false" autoCapitalize="off" autoComplete="off" aria-label="Console command" placeholder="try: osint, vpn, whoami" className="flex-1 bg-transparent text-ink outline-none placeholder:text-faint/60" />
+            <span className="flex-none text-brand">visitor@cyber-rebels<span className="text-faint">:~$</span></span>
+            <input ref={inputRef} value={cmd} onChange={(e) => setCmd(e.target.value)} spellCheck="false" autoCapitalize="off" autoComplete="off" aria-label="Console command" placeholder="try: help, whoami, hacker" className="min-w-0 flex-1 bg-transparent text-ink outline-none placeholder:text-faint/60" />
           </form>
         </div>
       </div>
@@ -142,7 +143,7 @@ const TRUST = ["Runs in your browser", "No sign-up, no logging", "Open-source fr
 
 const STEPS = [
   { n: "01", title: "Expose", to: "/am-i-tracked", label: "privacy", icon: (<svg {...si} aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>), desc: "See the IP, location, and fingerprint every site grabs the second you connect — and a live privacy score." },
-  { n: "02", title: "Investigate", to: "/osint", label: "osint", icon: (<svg {...si} aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>), desc: "Run any IP, domain, URL, or file hash through a multi-source SOC console before you click or trust it." },
+  { n: "02", title: "Investigate", to: "/osint/recon", label: "osint", icon: (<svg {...si} aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>), desc: "Run any IP, domain, URL, or file hash through a multi-source SOC console before you click or trust it." },
   { n: "03", title: "Lock down", to: "/guides", label: "defense", icon: (<svg {...si} aria-hidden="true"><rect x="4" y="11" width="16" height="9" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>), desc: "Plain-English guides and honest VPN picks to shut the leaks: Tor, passwords, browser hardening, de-Google." },
 ];
 
@@ -212,7 +213,7 @@ export default function Home() {
                 <Link to="/best-vpns" className="btn-ghost">Best VPNs</Link>
               </div>
               <p className="mt-4 font-mono text-xs text-faint">
-                ▸ or talk to the console: type <span className="text-brand">osint</span>, <span className="text-brand">vpn</span>, or <span className="text-brand">whoami</span> →
+                ▸ talk to the console: try <span className="text-brand">whoami</span>, <span className="text-brand">lookup</span>, <span className="text-brand">vpn</span>, or <span className="text-brand">hacker</span> →
               </p>
             </div>
 
@@ -253,7 +254,7 @@ export default function Home() {
 
       {/* ===================== OSINT (one option, still prominent) ===================== */}
       <section className="mx-auto max-w-6xl px-4 py-8">
-        <Link to="/osint" className="panel-accent group block overflow-hidden transition-all hover:shadow-glow">
+        <Link to="/osint/recon" className="panel-accent group block overflow-hidden transition-all hover:shadow-glow">
           <div className="grid gap-0 md:grid-cols-[1.1fr_0.9fr]">
             <div className="p-6 sm:p-8">
               <div className="flex items-center gap-3">
@@ -268,7 +269,7 @@ export default function Home() {
                 <li className="flex items-center gap-2"><span className="text-brand">›</span> Abuse score &amp; scanner intel</li>
                 <li className="flex items-center gap-2"><span className="text-brand">›</span> Live IP geolocation map</li>
               </ul>
-              <span className="btn-primary mt-7 inline-flex">Open the OSINT console →</span>
+              <span className="btn-primary mt-7 inline-flex">Open Threat Lookup →</span>
             </div>
             <div className="border-t border-line bg-elevated/30 p-6 sm:p-8 md:border-l md:border-t-0">
               <p className="mono-label mb-3">// sample verdict</p>
@@ -297,6 +298,36 @@ export default function Home() {
             <BrandLogo slug="shodan" name="Shodan" size={22} />
             <BrandLogo slug="haveibeenpwned" name="Have I Been Pwned" size={22} />
             <BrandLogo name="ipwho.is" size={22} />
+          </div>
+        </div>
+      </section>
+
+      {/* ===================== TRUSTED & RECOMMENDED ===================== */}
+      <section className="mx-auto max-w-6xl px-4 pb-16">
+        <div className="panel p-6 sm:p-8">
+          <h2 className="font-mono text-2xl font-bold tracking-tight">Tools we <span className="text-brand">trust &amp; recommend</span></h2>
+          <p className="mt-3 max-w-3xl leading-relaxed text-muted">Cyber Rebels stays free partly because a couple of the tools we genuinely recommend are affiliate-supported — using these links costs you nothing extra and helps keep every tool on this site free, and we only list products we would actually run ourselves. The live threat intelligence here is powered by trusted public sources, and we point you to the same authoritative security frameworks and government resources that professional analysts rely on every day.</p>
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <a href="https://go.nordvpn.net/aff_c?offer_id=15&aff_id=151110&url_id=902" target="_blank" rel="sponsored noopener noreferrer" className="panel-accent group relative flex flex-col overflow-hidden border-brand/50 p-5 shadow-glow transition-all hover:-translate-y-0.5">
+              <span className="absolute right-0 top-0 rounded-bl-lg bg-brand px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-onbrand">★ Editor&apos;s choice</span>
+              <div className="flex items-center gap-3"><BrandLogo slug="nordvpn" name="NordVPN" size={30} /><h3 className="font-mono text-lg font-bold text-ink group-hover:text-brand">NordVPN</h3><span className="chip border-brand/50 text-brand">95/100</span></div>
+              <p className="mt-2 flex-1 text-sm text-muted">Our <span className="text-ink">#1 VPN pick</span> — independently-audited no-logs, thousands of RAM-only servers worldwide, and built-in Threat Protection that blocks malware, trackers and malicious sites before they load. Hide your IP and stop your ISP logging every site you visit.</p>
+              <span className="btn-primary mt-4 w-full">Get the NordVPN deal →</span>
+            </a>
+            <a href="https://go.nordpass.io/aff_c?offer_id=488&aff_id=151110&url_id=9356" target="_blank" rel="sponsored noopener noreferrer" className="panel-accent group relative flex flex-col overflow-hidden border-brand/40 p-5 transition-all hover:-translate-y-0.5 hover:shadow-glow">
+              <span className="absolute right-0 top-0 rounded-bl-lg bg-elevated px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-brand">Nord Security</span>
+              <div className="flex items-center gap-3"><BrandLogo slug="nordpass" name="NordPass" size={30} /><h3 className="font-mono text-lg font-bold text-ink group-hover:text-brand">NordPass</h3></div>
+              <p className="mt-2 flex-1 text-sm text-muted">The password manager from the makers of NordVPN — <span className="text-ink">zero-knowledge</span> vault, passkeys, a built-in data-breach scanner and secure sharing, with unique strong passwords synced across all your devices.</p>
+              <span className="btn-ghost mt-4 w-full">Get NordPass →</span>
+            </a>
+          </div>
+          <div className="mt-6">
+            <p className="mono-label mb-2">// trusted sources, frameworks &amp; government resources</p>
+            <div className="flex flex-wrap gap-2">
+              {[["VirusTotal", "https://www.virustotal.com/"], ["Shodan", "https://www.shodan.io/"], ["AbuseIPDB", "https://www.abuseipdb.com/"], ["Have I Been Pwned", "https://haveibeenpwned.com/"], ["MITRE ATT&CK", "https://attack.mitre.org/"], ["CIS Benchmarks", "https://www.cisecurity.org/cis-benchmarks"], ["CISA", "https://www.cisa.gov/"], ["FBI IC3", "https://www.ic3.gov/"]].map(([n, u]) => (
+                <a key={u} href={u} target="_blank" rel="noopener noreferrer" className="chip hover:border-brand hover:text-brand">{n} ↗</a>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -352,6 +383,8 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+
     </div>
   );
 }
