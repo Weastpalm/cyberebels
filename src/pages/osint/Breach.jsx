@@ -53,7 +53,7 @@ export default function Breach() {
     <div className="surveil-grid">
       <Seo path="/osint/breach" title="Breach & Password Check" description="Check whether your password has leaked in a breach — privately, using k-anonymity, so it never leaves your browser. Plus an email breach lookup." />
       <PageHeader eyebrow="// osint · credentials" title="Breach &" accent="Password Check" intro="Find out if your credentials are already circulating — without ever sending your actual password anywhere." />
-      <section className="mx-auto max-w-6xl px-4 pb-16">
+      <section className="mx-auto max-w-[1440px] px-4 pb-16">
         <div className="grid gap-6 lg:grid-cols-2">
           <PwnedChecker />
           <div className="panel flex flex-col p-6">

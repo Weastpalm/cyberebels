@@ -51,7 +51,7 @@ export default function ThreatHub() {
       <Seo path="/osint" title="Threat Center — OSINT & Investigation Toolkit" description="A SOC-style Threat Center. Start with the Threat Lookup to investigate any IP, domain, URL or file hash across VirusTotal, AbuseIPDB and Shodan, then use focused modules for phishing, domains, SSL, decoding and live threat intel." keywords="threat center, osint toolkit, soc analyst tools, recon console, ip lookup, domain intel, phishing analyzer, intel radar" jsonLd={ld} />
       <PageHeader eyebrow="// threat center · investigation toolkit" title="Threat" accent="Center" intro="Every investigation tool in one place. Start with the Threat Lookup for any IP, domain, URL or file hash — then drop into the focused modules below." />
 
-      <section className="mx-auto max-w-6xl px-4 pb-16">
+      <section className="mx-auto max-w-[1440px] px-4 pb-16">
         {/* FEATURED — Threat Lookup (biggest tile) */}
         <Link to="/osint/recon" className="panel-accent group block overflow-hidden border-brand/50 shadow-glow transition-all hover:-translate-y-0.5">
           <div className="grid gap-0 md:grid-cols-[1.15fr_0.85fr]">

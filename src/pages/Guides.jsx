@@ -33,6 +33,14 @@ export default function Guides() {
       />
 
       <div className="mx-auto max-w-5xl px-4 pb-16">
+        <Link to="/self-defense" className="panel-accent group mb-5 flex flex-wrap items-center gap-4 border-brand/40 p-6 shadow-glow transition-all hover:-translate-y-0.5">
+          <span className="chip border-brand/50 text-brand">★ start here</span>
+          <div className="min-w-0">
+            <h2 className="font-mono text-lg font-bold text-ink group-hover:text-brand">Digital Self-Defense Checklist</h2>
+            <p className="mt-1 text-sm text-muted">Ten quick wins you can knock out today — an interactive checklist that saves your progress on this device.</p>
+          </div>
+          <span className="ml-auto font-mono text-sm text-brand">Open checklist →</span>
+        </Link>
         <div className="grid gap-4 sm:grid-cols-2">
           {GUIDES.map((g) => (
             <Link

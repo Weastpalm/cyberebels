@@ -38,7 +38,7 @@ export default function Fingerprint() {
 
   if (!fp) {
     return (
-      <div className="mx-auto flex min-h-[60vh] max-w-6xl flex-col items-center justify-center px-4 text-center">
+      <div className="mx-auto flex min-h-[60vh] max-w-[1440px] flex-col items-center justify-center px-4 text-center">
         <span className="animate-pulse font-mono text-brand">computing your fingerprint…</span>
         <p className="mt-3 text-sm text-faint">Drawing to canvas, probing WebGL & audio. All local.</p>
       </div>
@@ -53,7 +53,7 @@ export default function Fingerprint() {
         description="See your unique browser fingerprint — canvas, WebGL, audio, fonts and more — and roughly how identifiable you are across the web with no cookies needed."
         keywords="browser fingerprint, fingerprint test, canvas fingerprint, am i unique, device fingerprint, anti-fingerprinting"
       />
-      <header className="mx-auto max-w-6xl px-4 pb-6 pt-14">
+      <header className="mx-auto max-w-[1440px] px-4 pb-6 pt-14">
         <p className="mono-label mb-3">// canvas · webgl · audio · fonts</p>
         <h1 className="font-mono text-3xl font-extrabold tracking-tight sm:text-5xl">
           Your Browser <span className="text-brand">Fingerprint</span>
@@ -64,7 +64,7 @@ export default function Fingerprint() {
         </p>
       </header>
 
-      <div className="mx-auto max-w-6xl px-4">
+      <div className="mx-auto max-w-[1440px] px-4">
         {/* Uniqueness headline */}
         <div className="panel p-8 text-center shadow-glow">
           <p className="mono-label">Estimated distinctiveness</p>

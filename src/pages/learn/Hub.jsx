@@ -16,7 +16,7 @@ export default function LearnHub() {
     <div className="surveil-grid">
       <Seo path="/learn" title="Education — Interactive Security Labs" description="Hands-on, interactive labs that teach how security really works: password hashing and salts, password cracking, IP addressing, network traffic flow, and browser fingerprinting." keywords="learn cybersecurity interactive, password hashing lab, password cracking, ip addressing, networking simulation, fingerprint lab" />
       <PageHeader eyebrow="// education · hands-on labs" title="Learn by" accent="doing." intro="No slideshows. Each lab is a live, interactive tool that runs entirely in your browser — change the inputs and watch the concept move." />
-      <section className="mx-auto max-w-6xl px-4 pb-16">
+      <section className="mx-auto max-w-[1440px] px-4 pb-16">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {LABS.map((l) => (
             <Link key={l.to} to={l.to} className="panel group flex flex-col p-6 transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-glow">

@@ -47,7 +47,7 @@ export default function Footprint() {
     <div className="surveil-grid">
       <Seo path="/osint/footprint" title="Footprint Audit" description="See yourself the way an investigator would. Enter a username and open the exact OSINT searches that surface your public profiles — so you can clean them up." />
       <PageHeader eyebrow="// osint · self-audit" title="Your Public" accent="Footprint" intro="See yourself the way an investigator would, then clean it up. Nothing is logged — these just open the searches in new tabs." />
-      <section className="mx-auto max-w-6xl px-4 pb-16">
+      <section className="mx-auto max-w-[1440px] px-4 pb-16">
         <FootprintAudit />
         <BackToConsole />
       </section>

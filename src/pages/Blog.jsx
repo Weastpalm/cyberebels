@@ -56,7 +56,7 @@ export default function Blog() {
         intro="Deep dives, teardowns, and practical explainers on privacy, surveillance, and taking back control."
       />
 
-      <div className="mx-auto max-w-6xl px-4 pb-16">
+      <div className="mx-auto max-w-[1440px] px-4 pb-16">
         <div className="grid gap-5 md:grid-cols-3">
           {POSTS.map((p, i) => (
             <Link

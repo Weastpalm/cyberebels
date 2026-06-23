@@ -21,7 +21,7 @@ export default function PrivacyTools() {
         intro="For every product that's quietly mining your data, there's a private alternative that works just as well. Here's the swap list, category by category."
       />
 
-      <div className="mx-auto max-w-6xl px-4">
+      <div className="mx-auto max-w-[1440px] px-4">
         <div className="space-y-5">
           {TOOL_CATEGORIES.map((cat, idx) => (
             <div key={cat.category}>

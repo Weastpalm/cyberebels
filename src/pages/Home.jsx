@@ -148,6 +148,7 @@ const STEPS = [
 ];
 
 const TOOLS = [
+  { to: "/what-is-my-ip", tag: "live", title: "What Is My IP?", Icon: IconRadar, desc: "Instantly see your public IP, approximate location and a live map — and what it quietly reveals about you." },
   { to: "/am-i-tracked", tag: "live", title: "Am I Being Tracked?", Icon: IconEye, desc: "A full report on what every site sees the moment you connect — IP, location, leaks, and a live privacy score." },
   { to: "/fingerprint", tag: "live", title: "Browser Fingerprint", Icon: IconPrint, desc: "The exact signals that follow you across the web with no cookies — and how rare your combination really is." },
   { to: "/anti-detect", tag: "lab", title: "Anti-Detect Lab", Icon: IconMask, desc: "Build and visualize fingerprint profiles, then learn how to actually stop trackers from recognizing you." },
@@ -157,6 +158,7 @@ const SECONDARY = [
   { to: "/guides", title: "Guides", desc: "12 step-by-step guides: access Tor safely, strong passwords, the dark web, and more." },
   { to: "/blog", title: "Blog", desc: "Plain-English explainers — fingerprinting, data brokers, and how to learn ethical hacking." },
   { to: "/best-vpns", title: "Best VPNs", desc: "Hide your IP and stop your ISP logging you. Top picks, compared honestly." },
+  { to: "/quantum-vpn-tracker", title: "Quantum-Safe VPN Tracker", desc: "Which VPNs have actually deployed post-quantum encryption — sourced and dated." },
   { to: "/privacy-tools", title: "Private Swaps", desc: "Big-Tech apps and the private alternatives that replace them." },
 ];
 
@@ -185,7 +187,7 @@ export default function Home() {
         </div>
         <div aria-hidden="true" className="pointer-events-none absolute left-1/3 top-0 z-0 h-80 w-80 -translate-x-1/2 rounded-full bg-brand/10 blur-[100px]" />
 
-        <div className="relative z-10 mx-auto max-w-6xl px-4 pb-8 pt-12 sm:pt-16">
+        <div className="relative z-10 mx-auto max-w-[1440px] px-4 pb-8 pt-12 sm:pt-16">
           <div className="grid items-start gap-10 lg:grid-cols-[1.02fr_0.98fr]">
             <div>
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-brand/40 bg-brand/5 px-3 py-1">
@@ -230,8 +232,36 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ===================== EXPLORE (three pillars) ===================== */}
+      <section className="mx-auto max-w-[1440px] px-4 py-8">
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-2">
+          <h2 className="font-mono text-2xl font-bold tracking-tight">Everything in <span className="text-brand">three places.</span></h2>
+          <span className="font-mono text-xs text-faint">// tools · guides · articles</span>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          <Link to="/tools" className="panel group flex flex-col p-6 transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-glow">
+            <div className="flex items-center justify-between"><span className="text-brand"><svg {...si} aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg></span><span className="chip border-brand/50 text-brand">20+ live</span></div>
+            <h3 className="mt-4 font-mono text-lg font-bold text-ink group-hover:text-brand">Tools</h3>
+            <p className="mt-2 flex-1 text-sm text-muted">Interactive, instant-result utilities — threat lookups, tracker &amp; fingerprint checks, the Quantum-Safe VPN Tracker, pen-test helpers and labs.</p>
+            <span className="mt-4 font-mono text-sm text-brand">Open the directory →</span>
+          </Link>
+          <Link to="/guides" className="panel group flex flex-col p-6 transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-glow">
+            <div className="flex items-center justify-between"><span className="text-brand"><svg {...si} aria-hidden="true"><path d="M4 5h10a3 3 0 0 1 3 3v11a2 2 0 0 0-2-2H4Z" /><path d="M20 5h-3a3 3 0 0 0-3 3v11a2 2 0 0 1 2-2h4Z" /></svg></span><span className="chip">16 guides</span></div>
+            <h3 className="mt-4 font-mono text-lg font-bold text-ink group-hover:text-brand">Guides</h3>
+            <p className="mt-2 flex-1 text-sm text-muted">Step-by-step, plain-English how-tos: access Tor safely, build uncrackable passwords, harden your browser and phone, spot phishing.</p>
+            <span className="mt-4 font-mono text-sm text-brand">Read the guides →</span>
+          </Link>
+          <Link to="/blog" className="panel group flex flex-col p-6 transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-glow">
+            <div className="flex items-center justify-between"><span className="text-brand"><svg {...si} aria-hidden="true"><path d="M4 4h16v14H7l-3 3Z" /><path d="M8 9h8M8 13h5" /></svg></span><span className="chip">7 articles</span></div>
+            <h3 className="mt-4 font-mono text-lg font-bold text-ink group-hover:text-brand">Blog</h3>
+            <p className="mt-2 flex-1 text-sm text-muted">Timely explainers and commentary — fingerprinting, data brokers, where to report cybercrime, and how to learn ethical hacking.</p>
+            <span className="mt-4 font-mono text-sm text-brand">Read the blog →</span>
+          </Link>
+        </div>
+      </section>
+
       {/* ===================== WHAT YOU CAN DO HERE ===================== */}
-      <section className="mx-auto max-w-6xl px-4 py-8">
+      <section className="mx-auto max-w-[1440px] px-4 py-8">
         <div className="mb-5 flex flex-wrap items-end justify-between gap-2">
           <h2 className="font-mono text-2xl font-bold tracking-tight">Three moves, <span className="text-brand">one toolkit.</span></h2>
           <span className="font-mono text-xs text-faint">// expose → investigate → lock down</span>
@@ -253,7 +283,7 @@ export default function Home() {
       </section>
 
       {/* ===================== OSINT (one option, still prominent) ===================== */}
-      <section className="mx-auto max-w-6xl px-4 py-8">
+      <section className="mx-auto max-w-[1440px] px-4 py-8">
         <Link to="/osint/recon" className="panel-accent group block overflow-hidden transition-all hover:shadow-glow">
           <div className="grid gap-0 md:grid-cols-[1.1fr_0.9fr]">
             <div className="p-6 sm:p-8">
@@ -289,7 +319,7 @@ export default function Home() {
       </section>
 
       {/* intelligence sources */}
-      <section className="mx-auto max-w-6xl px-4 py-6">
+      <section className="mx-auto max-w-[1440px] px-4 py-6">
         <div className="panel flex flex-col items-center gap-4 p-6 sm:flex-row sm:justify-between">
           <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-faint">// intelligence sources</span>
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -303,7 +333,7 @@ export default function Home() {
       </section>
 
       {/* ===================== TRUSTED & RECOMMENDED ===================== */}
-      <section className="mx-auto max-w-6xl px-4 pb-16">
+      <section className="mx-auto max-w-[1440px] px-4 pb-16">
         <div className="panel p-6 sm:p-8">
           <h2 className="font-mono text-2xl font-bold tracking-tight">Tools we <span className="text-brand">trust &amp; recommend</span></h2>
           <p className="mt-3 max-w-3xl leading-relaxed text-muted">Cyber Rebels stays free partly because a couple of the tools we genuinely recommend are affiliate-supported — using these links costs you nothing extra and helps keep every tool on this site free, and we only list products we would actually run ourselves. The live threat intelligence here is powered by trusted public sources, and we point you to the same authoritative security frameworks and government resources that professional analysts rely on every day.</p>
@@ -333,12 +363,12 @@ export default function Home() {
       </section>
 
       {/* ===================== THE REST OF THE TOOLKIT ===================== */}
-      <section className="mx-auto max-w-6xl px-4 py-8">
+      <section className="mx-auto max-w-[1440px] px-4 py-8">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-2">
           <h2 className="font-mono text-2xl font-bold tracking-tight">The rest of the <span className="text-brand">arsenal.</span></h2>
           <span className="font-mono text-xs text-faint">// everything runs in your browser</span>
         </div>
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {TOOLS.map((c) => (
             <Link key={c.to} to={c.to} className="panel group flex flex-col p-6 transition-all hover:-translate-y-0.5 hover:border-brand hover:shadow-glow">
               <div className="flex items-center gap-3">
@@ -353,10 +383,10 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-6xl px-4"><AdSlot slot="home-mid" /></div>
+      <div className="mx-auto max-w-[1440px] px-4"><AdSlot slot="home-mid" /></div>
 
       {/* ============================== WHY ============================== */}
-      <section className="mx-auto max-w-6xl px-4 py-12">
+      <section className="mx-auto max-w-[1440px] px-4 py-12">
         <div className="panel p-8 sm:p-10">
           <h2 className="font-mono text-2xl font-bold tracking-tight">You&apos;re not paranoid. You&apos;re <span className="text-brand">profiled.</span></h2>
           <p className="mt-4 max-w-3xl text-muted">Every site you open quietly collects your IP, location, device, and a fingerprint unique enough to follow you across the web — no login required. We&apos;re not here to scare you. We&apos;re here to hand you the same tools the privacy-obsessed already use, in language that actually makes sense.</p>
@@ -368,7 +398,7 @@ export default function Home() {
       </section>
 
       {/* ===================== SECONDARY ===================== */}
-      <section className="mx-auto max-w-6xl px-4 py-8 pb-16">
+      <section className="mx-auto max-w-[1440px] px-4 py-8 pb-16">
         <div className="mb-6">
           <h2 className="font-mono text-2xl font-bold tracking-tight">Then <span className="text-brand">lock it down</span></h2>
           <p className="mt-2 max-w-2xl text-muted">Once you&apos;ve seen the problem, here&apos;s how to fix it — real guides, honest reviews, and the swaps that ditch the trackers baked into your daily apps.</p>

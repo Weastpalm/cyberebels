@@ -208,7 +208,7 @@ export default function AntiDetect() {
         jsonLd={faqLd}
       />
 
-      <header className="mx-auto max-w-6xl px-4 pb-4 pt-14">
+      <header className="mx-auto max-w-[1440px] px-4 pb-4 pt-14">
         <p className="mono-label mb-3">// anti-detect · fingerprint lab</p>
         <h1 className="font-mono text-3xl font-extrabold tracking-tight sm:text-5xl">
           The Anti-Detect <span className="text-brand">Lab.</span>
@@ -221,7 +221,7 @@ export default function AntiDetect() {
       </header>
 
       {/* HONESTY BANNER — prominent, on purpose */}
-      <div className="mx-auto max-w-6xl px-4">
+      <div className="mx-auto max-w-[1440px] px-4">
         <div className="rounded-md border border-warn/40 bg-warn/5 p-4">
           <p className="font-mono text-sm font-bold text-warn">⚠ Read this first — what this lab is, and isn't</p>
           <p className="mt-2 text-sm text-muted">
@@ -237,7 +237,7 @@ export default function AntiDetect() {
       </div>
 
       {/* THE LAB */}
-      <div className="mx-auto mt-8 max-w-6xl px-4">
+      <div className="mx-auto mt-8 max-w-[1440px] px-4">
         <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
           {/* profile sidebar */}
           <aside className="panel h-fit p-4">
@@ -373,7 +373,7 @@ export default function AntiDetect() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-6xl px-4"><AdSlot slot="antidetect-mid" /></div>
+      <div className="mx-auto max-w-[1440px] px-4"><AdSlot slot="antidetect-mid" /></div>
 
       {/* What antidetect browsers really are */}
       <section className="mx-auto max-w-3xl px-4 py-10">

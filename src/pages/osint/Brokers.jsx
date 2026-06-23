@@ -16,7 +16,7 @@ export default function Brokers() {
     <div className="surveil-grid">
       <Seo path="/osint/brokers" title="Scrub Yourself From Data Brokers" description="People-search sites resell your personal info. Here are direct opt-out links for the biggest data brokers — opting out is free." />
       <PageHeader eyebrow="// osint · self-audit" title="Scrub Yourself From" accent="Data Brokers" intro="People-search sites resell your name, address, and phone number. Opting out is free — here are the direct links." />
-      <section className="mx-auto max-w-6xl px-4 pb-16">
+      <section className="mx-auto max-w-[1440px] px-4 pb-16">
         <div className="panel p-6">
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {BROKERS.map(([name, url]) => (

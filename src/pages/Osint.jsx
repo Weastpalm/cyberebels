@@ -395,7 +395,7 @@ export default function Osint() {
     <div className="surveil-grid">
       <Seo path="/osint/recon" title="Threat Lookup — Check IPs, Domains, URLs & File Hashes for Threats" description="A SOC-grade OSINT console. Correlate VirusTotal, AbuseIPDB and Shodan on any IP, domain, URL or file hash, with live geolocation — free, in your browser." keywords="OSINT console, SOC analyst tool, ip reputation, virustotal, abuseipdb, shodan, threat intelligence lookup, file hash lookup" jsonLd={howToLd} />
 
-      <header className="mx-auto max-w-6xl px-4 pb-6 pt-14">
+      <header className="mx-auto max-w-[1440px] px-4 pb-6 pt-14">
         <div className="mb-3"><Link to="/osint" className="inline-flex items-center gap-2 font-mono text-xs text-faint transition-colors hover:text-brand">← Threat Center</Link></div>
         <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-brand/40 bg-brand/5 px-3 py-1"><span className="font-mono text-[11px] uppercase tracking-wider text-brand">★ Threat Lookup · the Threat Center flagship</span></div>
         <p className="eyebrow mb-3">// soc · threat investigation console</p>
@@ -407,11 +407,11 @@ export default function Osint() {
         </div>
       </header>
 
-      <section className="mx-auto max-w-6xl scroll-mt-24 px-4 py-4" id="investigate"><Investigator key={initial} initialQuery={initial} onResult={onResult} preset={presetEntry ? presetEntry.full : null} /><HistoryList items={history} onClear={clearH} /></section>
+      <section className="mx-auto max-w-[1440px] scroll-mt-24 px-4 py-4" id="investigate"><Investigator key={initial} initialQuery={initial} onResult={onResult} preset={presetEntry ? presetEntry.full : null} /><HistoryList items={history} onClear={clearH} /></section>
 
-      <div className="mx-auto max-w-6xl px-4"><AdSlot slot="osint-mid" /></div>
+      <div className="mx-auto max-w-[1440px] px-4"><AdSlot slot="osint-mid" /></div>
 
-      <section className="mx-auto max-w-6xl px-4 py-8">
+      <section className="mx-auto max-w-[1440px] px-4 py-8">
         <Link to="/osint" className="panel group flex flex-wrap items-center gap-x-3 gap-y-1 p-5 transition-all hover:border-brand hover:shadow-glow">
           <span className="font-mono text-sm font-bold text-ink group-hover:text-brand">← Back to the Threat Center</span>
           <span className="min-w-0 text-sm text-muted">Intel Radar, Domain Intel, Email &amp; Phishing, SSL, QR, Decoder and more — all organized in the hub.</span>

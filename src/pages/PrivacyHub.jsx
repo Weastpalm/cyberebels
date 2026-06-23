@@ -13,6 +13,7 @@ const TOOLS = [
 
 const LOCKDOWN = [
   { to: "/best-vpns", title: "Best VPNs", desc: "Hide your IP and stop ISP logging — compared honestly, with trust scores." },
+  { to: "/quantum-vpn-tracker", title: "Quantum-Safe VPNs", desc: "Who has actually shipped post-quantum encryption." },
   { to: "/privacy-tools", title: "Private Swaps", desc: "Big-Tech apps and the private alternatives that replace them." },
   { to: "/de-google", title: "De-Google", desc: "Cut Google out of your daily life, service by service." },
   { to: "/guides", title: "Guides", desc: "Step-by-step hardening: Tor, passwords, browser lockdown." },
@@ -25,7 +26,7 @@ export default function PrivacyHub() {
       <Seo path="/privacy" title="Privacy Center — See What You Leak, Then Lock It Down" description="A privacy hub: see the IP, location and browser fingerprint every site collects, check your breach exposure, scrub data brokers, and lock it down with honest VPN picks and hardening guides." keywords="privacy tools, browser fingerprint, am i being tracked, data breach check, data broker removal, vpn, online privacy" jsonLd={ld} />
       <PageHeader eyebrow="// privacy · your exposure" title="Privacy" accent="Center" intro="First see exactly what every site knows about you — then shut the leaks. Start with a full tracking report, then work through the tools below." />
 
-      <section className="mx-auto max-w-6xl px-4 pb-16">
+      <section className="mx-auto max-w-[1440px] px-4 pb-16">
         {/* FEATURED — Am I Being Tracked */}
         <Link to="/am-i-tracked" className="panel-accent group block overflow-hidden border-brand/50 shadow-glow transition-all hover:-translate-y-0.5">
           <div className="grid gap-0 md:grid-cols-[1.15fr_0.85fr]">

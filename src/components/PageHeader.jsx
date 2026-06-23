@@ -1,6 +1,6 @@
 export default function PageHeader({ eyebrow, title, accent, intro }) {
   return (
-    <header className="relative mx-auto max-w-6xl px-4 pb-8 pt-16">
+    <header className="relative mx-auto max-w-[1440px] px-4 pb-8 pt-16">
       {eyebrow && <p className="eyebrow mb-4">{eyebrow}</p>}
       <h1 className="font-mono text-3xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
         {title} {accent && <span className="text-brand text-glow">{accent}</span>}

@@ -49,7 +49,7 @@ export default function VpnComparison() {
         intro="A VPN hides your IP and stops your ISP from logging every site you visit. Here are the five we'd actually pay for — no filler, no 47-item list to pad affiliate links."
       />
 
-      <div className="mx-auto max-w-6xl px-4">
+      <div className="mx-auto max-w-[1440px] px-4">
         {/* Editor's choice — NordVPN advertisement */}
         <div className="panel-accent relative mb-8 overflow-hidden border-brand/50 p-6 shadow-glow sm:p-8">
           <span className="absolute right-0 top-0 rounded-bl-lg bg-brand px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-onbrand">★ Editor&apos;s choice</span>
@@ -157,6 +157,7 @@ export default function VpnComparison() {
           <p className="mt-3 max-w-3xl text-muted">
             We weight four things, in this order: a <span className="text-ink">no-logs policy that's actually been audited</span> by an outside firm (a promise isn't proof); <span className="text-ink">jurisdiction</span> (where the company is based decides who can legally demand your data); <span className="text-ink">real-world speed</span> on everyday connections; and <span className="text-ink">honest pricing</span> without renewal traps. The <span className="text-ink">trust score</span> on each VPN rolls those factors into a single 0&ndash;100 number so you can compare at a glance. We don't rank by who pays the biggest commission — Mullvad is on this list and runs no affiliate program at all.
           </p>
+          <p className="mt-4 text-sm text-muted">Future-proofing matters too: see our <a href="/quantum-vpn-tracker" className="link-accent">Quantum-Safe VPN Tracker</a> for which providers have actually deployed post-quantum (ML-KEM) encryption.</p>
         </div>
       </div>
     </div>

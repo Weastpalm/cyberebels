@@ -56,7 +56,7 @@ export default function Exposure() {
     <div className="surveil-grid">
       <Seo path="/osint/exposure" title="What You're Leaking Right Now" description="See the IP, location, ISP and browser fingerprint that every website collects the moment you connect — live, in your browser." />
       <PageHeader eyebrow="// osint · self-audit" title="What You're" accent="Leaking Right Now" intro="The data every site collects the second you connect — your live IP, location, ISP, and a browser fingerprint that follows you with no cookies." />
-      <section className="mx-auto max-w-6xl px-4 pb-16">
+      <section className="mx-auto max-w-[1440px] px-4 pb-16">
         <ExposureRecap />
         <BackToConsole />
       </section>

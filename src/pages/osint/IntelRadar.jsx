@@ -50,7 +50,7 @@ export default function IntelRadar() {
     <div className="surveil-grid">
       <Seo path="/osint/intel" title="Intel Radar — Exploited CVEs, Ransomware, Dark Web & DDoS" description="A threat-intelligence radar: live actively-exploited CVEs (CISA KEV, ransomware-flagged) plus curated feeds for FortiBleed, dark-web exposure, ransomware gangs, IOCs and DDoS trends." keywords="threat intelligence feeds, cisa kev, actively exploited cve, ransomware tracker, ioc feed, ddos trends, fortibleed" />
       <PageHeader eyebrow="// threat center · intel radar" title="Intel" accent="Radar" intro="A live pulse of what's being exploited right now, plus curated links to the best free threat-intel sources for dark-web, ransomware, IOC and DDoS reporting." />
-      <section className="mx-auto max-w-6xl px-4 pb-16">
+      <section className="mx-auto max-w-[1440px] px-4 pb-16">
         {/* TOP: Government & Reporting — where to report cybercrime */}
         <div className="panel-accent overflow-hidden border-brand/50 shadow-glow">
           <div className="flex items-center gap-2 border-b border-line bg-danger/5 px-4 py-2.5 sm:px-5">

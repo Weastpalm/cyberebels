@@ -106,7 +106,7 @@ export default function AmITracked() {
 
   if (state.loading) {
     return (
-      <div className="mx-auto flex min-h-[60vh] max-w-6xl flex-col items-center justify-center px-4 text-center">
+      <div className="mx-auto flex min-h-[60vh] max-w-[1440px] flex-col items-center justify-center px-4 text-center">
         <div className="font-mono text-brand">
           <span className="animate-pulse">scanning your connection…</span>
         </div>
@@ -129,7 +129,7 @@ export default function AmITracked() {
         description="Run a free, live report on what every website sees the moment you connect: your IP, location, ISP, WebRTC leaks, and an honest privacy score. Runs entirely in your browser."
         keywords="am i being tracked, what is my IP, privacy test, webrtc leak test, browser privacy check"
       />
-      <header className="mx-auto max-w-6xl px-4 pb-6 pt-14">
+      <header className="mx-auto max-w-[1440px] px-4 pb-6 pt-14">
         <p className="mono-label mb-3">// live trace · runs in your browser</p>
         <h1 className="font-mono text-3xl font-extrabold tracking-tight sm:text-5xl">
           Am I Being <span className="text-danger">Tracked?</span>
@@ -140,7 +140,7 @@ export default function AmITracked() {
         </p>
       </header>
 
-      <div className="mx-auto max-w-6xl px-4">
+      <div className="mx-auto max-w-[1440px] px-4">
         <ScoreGauge score={score} />
 
         <div className="mt-5 grid gap-5 md:grid-cols-2">
