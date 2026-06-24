@@ -26,6 +26,7 @@ Your API keys live in `.env`, which is already in `.gitignore`, so git will NOT 
 Site configuration → Environment variables → Add a variable (one per key):
 - `VIRUSTOTAL_API_KEY` = your VirusTotal key
 - `ABUSEIPDB_API_KEY` = your AbuseIPDB key
+- `IPQS_API_KEY` — optional. IPQualityScore fraud/risk score for IPs, domains & URLs. Free tier ~5,000 lookups/month: create a free account at ipqualityscore.com and copy the API key.
 - `SITE_ORIGIN` = your final URL (set after the domain works, e.g. `https://cyberebels.com`)
 Then Deploys → Trigger deploy → Clear cache and deploy site.
 (No Shodan key needed — Shodan InternetDB is keyless.)

@@ -36,6 +36,14 @@ export function hostOf(type, value) {
   return null;
 }
 
+export async function ipqsLookup(type, value) {
+  const r = await getJSON(`/.netlify/functions/ipqs?type=${type}&value=${encodeURIComponent(value)}`);
+  if (r.unreachable) return { source: "ipqs", state: "unreachable" };
+  const data = r.data || {};
+  if (!r.ok && !data.error) data.error = `feed error (HTTP ${r.status || "?"})`;
+  return { source: "ipqs", state: "ok", ...data };
+}
+
 export async function vtLookup(type, value) {
   const r = await getJSON(`/.netlify/functions/vt-lookup?type=${type}&value=${encodeURIComponent(value)}`);
   if (r.unreachable) return { source: "virustotal", state: "unreachable" };

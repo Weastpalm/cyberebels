@@ -134,7 +134,7 @@ function InteractiveConsole() {
           </form>
         </div>
       </div>
-      {located && <GeoConsole lat={env.ip.lat} lon={env.ip.lon} label={[env.ip.city, env.ip.country].filter(Boolean).join(", ")} sub="↑ that's you — no login, no clicks" />}
+      {located && <GeoConsole flag={env.ip.flag} lat={env.ip.lat} lon={env.ip.lon} label={[env.ip.city, env.ip.country].filter(Boolean).join(", ")} sub="↑ that's you — no login, no clicks" />}
     </div>
   );
 }

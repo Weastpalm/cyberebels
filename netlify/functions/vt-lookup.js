@@ -79,6 +79,27 @@ export const handler = async (event) => {
       lastAnalysisDate: a.last_analysis_date || null,
       meaningfulName: a.meaningful_name || null, typeDescription: a.type_description || null,
     };
+    // Files seen communicating with this IP/domain (history of contact with malware).
+    if (type === "ip" || type === "domain") {
+      try {
+        const cr = await fetch(`https://www.virustotal.com/api/v3/${endpoint}/communicating_files?limit=40`, { headers: { "x-apikey": apiKey } });
+        if (cr.ok) {
+          const cd = await cr.json();
+          const files = Array.isArray(cd.data) ? cd.data : [];
+          let mal = 0, recent = 0;
+          for (const f of files) {
+            const fa = f.attributes || {};
+            const m = (fa.last_analysis_stats && fa.last_analysis_stats.malicious) || 0;
+            if (m > 0) {
+              mal++;
+              const dt = Math.max(fa.last_submission_date || 0, fa.last_analysis_date || 0, fa.first_submission_date || 0);
+              if (dt > recent) recent = dt;
+            }
+          }
+          out.communicating = { sampled: files.length, malicious: mal, mostRecent: recent || null };
+        }
+      } catch (e) { /* relationship is best-effort */ }
+    }
     await cacheSet("vt-cache", cacheKey, out);
     return json(200, out);
   } catch (e) {

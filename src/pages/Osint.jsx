@@ -5,7 +5,7 @@ import AdSlot from "../components/AdSlot.jsx";
 import GeoConsole from "../components/GeoConsole.jsx";
 import BrandLogo from "../components/BrandLogo.jsx";
 import { getIpGeo } from "../lib/detect.js";
-import { detectType, hostOf, vtLookup, abuseIpdb, shodanInternetDB, resolveHost, urlscanSearch } from "../lib/osint.js";
+import { detectType, hostOf, vtLookup, abuseIpdb, shodanInternetDB, resolveHost, urlscanSearch, ipqsLookup } from "../lib/osint.js";
 import { loadHistory, saveHistory, addEntry, clearHistory } from "../lib/history.js";
 
 const TYPES = [
@@ -23,6 +23,35 @@ const TONE = {
   mute: "border-line text-faint",
 };
 function Pill({ tone = "mute", children }) { return <span className={`chip ${TONE[tone]}`}>{children}</span>; }
+function relTime(sec) {
+  if (!sec) return "";
+  const days = Math.floor((Date.now() / 1000 - sec) / 86400);
+  if (days <= 0) return "today";
+  if (days < 30) return `${days} day${days > 1 ? "s" : ""} ago`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months} month${months > 1 ? "s" : ""} ago`;
+  const years = Math.floor(days / 365);
+  return `${years} year${years > 1 ? "s" : ""} ago`;
+}
+function vtVerdictNote(d, type) {
+  const noun = type === "ip" ? "IP" : type === "domain" ? "domain" : type === "url" ? "URL" : "file";
+  const mal = (d.stats && d.stats.malicious) || 0;
+  const susp = (d.stats && d.stats.suspicious) || 0;
+  const comm = d.communicating;
+  if (mal >= 1) return `The observed ${noun} has been flagged by ${mal === 1 ? "one vendor" : mal + " vendors"} on VirusTotal as malicious. Treat it as hostile and avoid interacting with it.`;
+  if (susp >= 1) return `The observed ${noun} has been flagged as suspicious by ${susp === 1 ? "one vendor" : susp + " vendors"} on VirusTotal. Treat it as unverified and investigate before trusting it.`;
+  if (comm && comm.malicious >= 1) return `The observed ${noun} does not appear inherently malicious, but it has a history of communicating with ${comm.malicious} known malicious file${comm.malicious > 1 ? "s" : ""}${comm.mostRecent ? `, most recently ${relTime(comm.mostRecent)}` : ""}. Proceed with caution.`;
+  return `The observed ${noun} does not inherently appear to be malicious based on current VirusTotal data. Stay context-aware — "no detections" is not a guarantee of safety.`;
+}
+function CopyNote({ text }) {
+  const [c, setC] = useState(false);
+  return (
+    <div className="mt-3 rounded-md border border-line bg-elevated/40 p-3">
+      <p className="font-mono text-[11px] leading-relaxed text-muted">{text}</p>
+      <button onClick={() => { try { navigator.clipboard.writeText(text); setC(true); setTimeout(() => setC(false), 1500); } catch (e) {} }} className="mt-2 rounded border border-line px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-faint transition-colors hover:border-brand hover:text-brand">{c ? "copied \u2713" : "copy note"}</button>
+    </div>
+  );
+}
 function Stat({ label, short, value, tone }) {
   const c = tone === "bad" ? "text-danger" : tone === "warn" ? "text-warn" : tone === "good" ? "text-brand" : "text-ink";
   return (<div className="min-w-0 rounded-md border border-line bg-base/40 p-1.5 text-center sm:p-2.5"><div className={`font-mono text-base font-bold tabular-nums sm:text-xl ${c}`}>{value}</div><div className="mt-0.5 truncate font-mono text-[9px] uppercase leading-tight tracking-wide text-faint sm:text-[10px] sm:tracking-wider"><span className="sm:hidden">{short || label}</span><span className="hidden sm:inline">{label}</span></div></div>);
@@ -84,13 +113,16 @@ function VtBody({ d, type }) {
         {d.country && <div className="flex justify-between gap-3"><dt className="text-faint">country</dt><dd className="text-muted">{d.country}</dd></div>}
         {d.reputation !== null && d.reputation !== undefined && <div className="flex justify-between gap-3"><dt className="text-faint">reputation</dt><dd className={d.reputation < 0 ? "text-danger" : "text-muted"}>{d.reputation}</dd></div>}
         {d.categories && d.categories.length > 0 && <div className="flex justify-between gap-3"><dt className="flex-none text-faint">categories</dt><dd className="min-w-0 truncate text-right text-muted">{[...new Set(d.categories)].slice(0, 3).join(", ")}</dd></div>}
+        {d.communicating && d.communicating.malicious > 0 && <div className="flex justify-between gap-3"><dt className="flex-none text-faint">malware contact</dt><dd className="min-w-0 truncate text-right text-warn">{d.communicating.malicious} file{d.communicating.malicious > 1 ? "s" : ""}{d.communicating.mostRecent ? ` · ${relTime(d.communicating.mostRecent)}` : ""}</dd></div>}
+        {d.communicating && d.communicating.malicious === 0 && <div className="flex justify-between gap-3"><dt className="flex-none text-faint">malware contact</dt><dd className="text-muted">none seen</dd></div>}
       </dl>
+      <CopyNote text={vtVerdictNote(d, type)} />
       {gui}
     </div>
   );
 }
 
-function AbuseBody({ d }) {
+function AbuseBody({ d, value }) {
   if (!d || d.state === "unreachable") return <Offline />;
   if (d.busy) return <Note>Daily budget reached (protecting the free tier) — try again later.</Note>;
   if (d.configured === false) return <NeedKey name="AbuseIPDB" url="https://www.abuseipdb.com/account/api" env="ABUSEIPDB_API_KEY" />;
@@ -99,6 +131,7 @@ function AbuseBody({ d }) {
   const tone = score >= 50 ? "text-danger" : score > 0 ? "text-warn" : "text-brand";
   return (
     <div>
+      <p className="mb-2 font-mono text-[11px] leading-relaxed text-faint">// community-reported IP abuse — a higher % means more reports of malicious activity.</p>
       <div className="flex items-end gap-3">
         <div className={`font-mono text-3xl font-extrabold tabular-nums ${tone}`}>{score}<span className="text-base text-faint">%</span></div>
         <div className="pb-1 font-mono text-[11px] text-faint">abuse confidence{d.cached ? " · cached" : ""}</div>
@@ -110,51 +143,126 @@ function AbuseBody({ d }) {
         {d.isp && <div className="flex justify-between gap-3"><dt className="flex-none text-faint">isp</dt><dd className="min-w-0 truncate text-right text-muted">{d.isp}</dd></div>}
         <div className="flex justify-between gap-3"><dt className="text-faint">tor exit</dt><dd className={d.isTor ? "text-warn" : "text-muted"}>{d.isTor ? "yes" : "no"}</dd></div>
       </dl>
+      {value && <a href={`https://www.abuseipdb.com/check/${encodeURIComponent(value)}`} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex font-mono text-[11px] link-accent">Full report on AbuseIPDB ↗</a>}
     </div>
   );
 }
 
-function ShodanBody({ d }) {
+function ShodanBody({ d, value }) {
   if (!d || d.state === "unreachable") return <Offline />;
-  if (d.found === false) return <Note>No exposed services indexed for this IP. <span className="text-faint">(InternetDB · free)</span></Note>;
+  if (d.found === false) return <div><Note>No exposed services indexed for this IP. <span className="text-faint">(InternetDB · free)</span></Note>{value && <a href={`https://www.shodan.io/host/${encodeURIComponent(value)}`} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex font-mono text-[11px] link-accent">Check on Shodan ↗</a>}</div>;
   return (
     <div className="space-y-3">
+      <p className="font-mono text-[11px] leading-relaxed text-faint">// internet-exposed ports, services &amp; known CVEs for this IP (Shodan InternetDB).</p>
       <div><div className="mb-1 font-mono text-[10px] uppercase tracking-wider text-faint">open ports ({d.ports.length})</div><div className="flex flex-wrap gap-1.5">{d.ports.length ? d.ports.map((p) => <Pill key={p} tone="info">{p}</Pill>) : <span className="font-mono text-xs text-muted">none</span>}</div></div>
       {d.vulns.length > 0 && (<div><div className="mb-1 font-mono text-[10px] uppercase tracking-wider text-danger">vulnerabilities ({d.vulns.length})</div><div className="flex flex-wrap gap-1.5">{d.vulns.slice(0, 10).map((c) => <Pill key={c} tone="bad">{c}</Pill>)}</div></div>)}
       {d.hostnames.length > 0 && <div className="break-all font-mono text-[11px]"><span className="text-faint">hostnames: </span><span className="text-muted">{d.hostnames.slice(0, 3).join(", ")}</span></div>}
       {d.tags.length > 0 && <div className="flex flex-wrap gap-1.5">{d.tags.map((t) => <Pill key={t}>{t}</Pill>)}</div>}
-      <p className="font-mono text-[10px] text-faint">Shodan InternetDB · free · updated weekly</p>
+      <div className="flex items-center justify-between gap-2"><p className="font-mono text-[10px] text-faint">Shodan InternetDB · free · updated weekly</p>{value && <a href={`https://www.shodan.io/host/${encodeURIComponent(value)}`} target="_blank" rel="noopener noreferrer" className="flex-none font-mono text-[11px] link-accent">View on Shodan ↗</a>}</div>
     </div>
   );
 }
 
+function UrlscanIntro() {
+  return <p className="mb-2 font-mono text-[11px] leading-relaxed text-faint">// urlscan.io opens the page in a sandboxed browser and records what it does — the domains it quietly contacts, the server and country hosting it, a screenshot, and behaviour that looks like phishing.</p>;
+}
 function UrlscanBody({ d }) {
   if (!d || d.state === "unreachable") return <Offline />;
   if (d.error) return <Note>{d.error}</Note>;
-  if (!d.found) return <Note>No public scans indexed on urlscan.io. <a href="https://urlscan.io/" target="_blank" rel="noopener noreferrer" className="link-accent">Submit a scan ↗</a></Note>;
+  if (!d.found) return <div><UrlscanIntro /><Note>No public scans indexed on urlscan.io yet. <a href="https://urlscan.io/" target="_blank" rel="noopener noreferrer" className="link-accent">Submit a scan ↗</a></Note></div>;
   return (
     <div className="space-y-1.5">
+      <UrlscanIntro />
       {d.results.map((x) => (
         <a key={x.id} href={`https://urlscan.io/result/${x.id}/`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 overflow-hidden rounded-md border border-line bg-elevated/40 p-2 hover:border-brand">
           <img src={`https://urlscan.io/screenshots/${x.id}.png`} alt="" loading="lazy" className="h-9 w-14 flex-none rounded border border-line object-cover sm:h-10 sm:w-16" />
           <span className="min-w-0 flex-1"><span className="block truncate font-mono text-[11px] text-ink">{x.url}</span><span className="block truncate font-mono text-[10px] text-faint">{[x.status && ("HTTP " + x.status), x.server, x.network, x.country, x.time && x.time.slice(0, 10)].filter(Boolean).join(" · ")}</span></span>
-          <span className="flex-none font-mono text-[10px] text-faint">\u2197</span>
+          <span className="flex-none font-mono text-[10px] text-faint">↗</span>
         </a>
       ))}
-      <p className="font-mono text-[10px] text-faint">urlscan.io passive search \u00b7 {(d.total || d.results.length).toLocaleString()} public scan(s)</p>
+      <p className="font-mono text-[10px] text-faint">urlscan.io passive search · {(d.total || d.results.length).toLocaleString()} public scan(s)</p>
     </div>
   );
 }
 
+function IpqsBody({ d, value, type }) {
+  if (!d || d.state === "unreachable") return <Offline />;
+  if (d.busy) return <Note>Daily IPQS budget reached (free tier ~5,000/mo) — try again later.</Note>;
+  if (d.configured === false) return <NeedKey name="IPQualityScore" url="https://www.ipqualityscore.com/create-account" env="IPQS_API_KEY" />;
+  if (d.error) return <WarnNote>{d.error}</WarnNote>;
+  const lookupUrl = type === "ip" ? "https://www.ipqualityscore.com/free-ip-lookup-proxy-vpn-test" : "https://www.ipqualityscore.com/threat-feeds/malicious-url-scanner";
+  const More = () => <a href={lookupUrl} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex font-mono text-[11px] link-accent">Look up on IPQS ↗</a>;
+  if (d.kind === "ip") {
+    const score = d.fraudScore ?? 0;
+    const tone = score >= 85 ? "text-danger" : score >= 50 ? "text-warn" : "text-brand";
+    const Flag = ({ k, on, bad }) => (<div className="flex justify-between gap-2"><span className="text-faint">{k}</span><span className={on ? (bad ? "text-danger" : "text-warn") : "text-muted"}>{on ? "yes" : "no"}</span></div>);
+    return (
+      <div>
+        <p className="mb-2 font-mono text-[11px] leading-relaxed text-faint">// real-time fraud score with proxy, VPN, Tor &amp; bot detection.</p>
+        <div className="flex items-end gap-3">
+          <div className={`font-mono text-3xl font-extrabold tabular-nums ${tone}`}>{score}<span className="text-base text-faint">/100</span></div>
+          <div className="pb-1 font-mono text-[11px] text-faint">fraud score{d.cached ? " · cached" : ""}</div>
+        </div>
+        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-elevated"><div className={`h-full rounded-full ${score >= 85 ? "bg-danger" : score >= 50 ? "bg-warn" : "bg-brand"}`} style={{ width: `${Math.max(2, score)}%` }} /></div>
+        <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 font-mono text-[11px]">
+          <Flag k="Proxy" on={d.proxy} />
+          <Flag k="VPN" on={d.vpn} />
+          <Flag k="Tor" on={d.tor} bad />
+          <Flag k="Bot" on={d.botStatus} bad />
+          <Flag k="Recent abuse" on={d.recentAbuse} bad />
+          <Flag k="Crawler" on={d.isCrawler} />
+        </div>
+        <dl className="mt-3 space-y-1 font-mono text-[11px]">
+          {(d.activeVpn || d.activeTor) && <div className="flex justify-between gap-3"><dt className="text-faint">active now</dt><dd className="text-warn">{[d.activeVpn && "VPN", d.activeTor && "Tor"].filter(Boolean).join(", ")}</dd></div>}
+          {d.connectionType && <div className="flex justify-between gap-3"><dt className="flex-none text-faint">connection</dt><dd className="min-w-0 truncate text-right text-muted">{d.connectionType}{d.mobile ? " · mobile" : ""}</dd></div>}
+          {d.abuseVelocity && <div className="flex justify-between gap-3"><dt className="text-faint">abuse velocity</dt><dd className="text-muted">{d.abuseVelocity}</dd></div>}
+          {(d.org || d.isp) && <div className="flex justify-between gap-3"><dt className="flex-none text-faint">network</dt><dd className="min-w-0 truncate text-right text-muted">{d.org || d.isp}</dd></div>}
+          {d.country && <div className="flex justify-between gap-3"><dt className="text-faint">country</dt><dd className="text-muted">{d.country}</dd></div>}
+        </dl>
+        <More />
+      </div>
+    );
+  }
+  const score = d.riskScore ?? 0;
+  const tone = score >= 85 ? "text-danger" : score >= 50 ? "text-warn" : "text-brand";
+  return (
+    <div>
+      <p className="mb-2 font-mono text-[11px] leading-relaxed text-faint">// scans the URL/domain for malware, phishing and other risk signals.</p>
+      <div className="flex items-end gap-3">
+        <div className={`font-mono text-3xl font-extrabold tabular-nums ${tone}`}>{score}<span className="text-base text-faint">/100</span></div>
+        <div className="pb-1 font-mono text-[11px] text-faint">risk score{d.cached ? " · cached" : ""}</div>
+      </div>
+      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-elevated"><div className={`h-full rounded-full ${score >= 85 ? "bg-danger" : score >= 50 ? "bg-warn" : "bg-brand"}`} style={{ width: `${Math.max(2, score)}%` }} /></div>
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        {d.malware && <Pill tone="bad">malware</Pill>}
+        {d.phishing && <Pill tone="bad">phishing</Pill>}
+        {d.unsafe && <Pill tone="bad">unsafe</Pill>}
+        {d.suspicious && <Pill tone="warn">suspicious</Pill>}
+        {d.spamming && <Pill tone="warn">spam</Pill>}
+        {!d.malware && !d.phishing && !d.unsafe && !d.suspicious && !d.spamming && <Pill tone="good">clean</Pill>}
+      </div>
+      <dl className="mt-3 space-y-1 font-mono text-[11px]">
+        {d.category && <div className="flex justify-between gap-3"><dt className="flex-none text-faint">category</dt><dd className="min-w-0 truncate text-right text-muted">{d.category}</dd></div>}
+        {d.server && <div className="flex justify-between gap-3"><dt className="flex-none text-faint">server</dt><dd className="min-w-0 truncate text-right text-muted">{d.server}</dd></div>}
+        {d.domainAge && <div className="flex justify-between gap-3"><dt className="text-faint">domain age</dt><dd className="text-muted">{d.domainAge}</dd></div>}
+      </dl>
+      <More />
+    </div>
+  );
+}
 function overallVerdict(r) {
-  const { vt, abuse, shodan } = r;
+  const { vt, abuse, shodan, ipqs } = r;
   let bad = false, warn = false;
   if (vt && vt.stats) { if (vt.stats.malicious > 0) bad = true; else if (vt.stats.suspicious > 0) warn = true; }
   if (abuse && typeof abuse.abuseConfidenceScore === "number") { if (abuse.abuseConfidenceScore >= 50) bad = true; else if (abuse.abuseConfidenceScore > 0) warn = true; }
   if (shodan && shodan.vulns && shodan.vulns.length > 0) warn = true;
+  if (ipqs && ipqs.configured) {
+    if (ipqs.kind === "ip") { if (ipqs.fraudScore >= 85 || ipqs.recentAbuse) bad = true; else if (ipqs.fraudScore >= 50) warn = true; }
+    else { if (ipqs.malware || ipqs.phishing || ipqs.unsafe || ipqs.riskScore >= 85) bad = true; else if (ipqs.suspicious || ipqs.spamming || ipqs.riskScore >= 50) warn = true; }
+  }
   if (bad) return { tone: "bad", badge: "MALICIOUS", text: "Multiple feeds flag this target. Treat as hostile." };
   if (warn) return { tone: "warn", badge: "SUSPICIOUS", text: "At least one feed raised a flag. Investigate before trusting." };
-  if (!(vt && vt.stats) && !(abuse && abuse.configured) && !(shodan && shodan.found)) return null;
+  if (!(vt && vt.stats) && !(abuse && abuse.configured) && !(shodan && shodan.found) && !(ipqs && ipqs.configured)) return null;
   return { tone: "good", badge: "CLEAN", text: "No feed flagged this target. Stay context-aware." };
 }
 
@@ -196,7 +304,7 @@ function HistoryList({ items, onClear }) {
 }
 
 function Scanning({ type }) {
-  const feeds = type === "ip" ? ["resolving target", "virustotal", "abuseipdb", "shodan internetdb", "geolocation"] : type === "file" ? ["virustotal file analysis"] : ["resolving host", "virustotal", "geolocation"];
+  const feeds = type === "ip" ? ["resolving target", "virustotal", "abuseipdb", "ipqualityscore", "shodan internetdb", "geolocation"] : type === "file" ? ["virustotal file analysis"] : ["resolving host", "virustotal", "ipqualityscore", "geolocation"];
   return (
     <div className="panel-accent mt-4 overflow-hidden">
       <div className="console-bar"><span className="console-dot bg-danger/80" /><span className="console-dot bg-warn/80" /><span className="console-dot bg-brand/80" /><span className="ml-2 font-mono text-xs text-faint">recon.sh — correlating feeds</span></div>
@@ -233,9 +341,17 @@ function GeoBlock({ geo }) {
   if (!geo || !geo.ok || typeof geo.lat !== "number") return null;
   return (
     <div className="min-w-0 md:col-span-2">
-      <div className="grid min-w-0 gap-4 sm:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
-        <GeoConsole lat={geo.lat} lon={geo.lon} label={[geo.city, geo.country].filter(Boolean).join(", ")} sub={geo.resolvedFrom ? `resolved ${geo.resolvedFrom} → ${geo.resolvedIp}` : geo.timezone ? `TZ ${geo.timezone}` : null} />
-        <dl className="space-y-1.5 self-center font-mono text-xs">
+      {geo.resolvedFrom && (
+        <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-info/40 bg-info/5 p-3 font-mono text-[12px]">
+          <span className="chip flex-none border-info/50 text-info">resolved</span>
+          <span className="min-w-0 break-all text-muted"><span className="text-ink">{geo.resolvedFrom}</span> → <span className="text-ink">{geo.resolvedIp}</span> — the map shows the location of the IP this domain resolves to, not the domain itself.</span>
+        </div>
+      )}
+      <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+        <GeoConsole tall flag={geo.flag} lat={geo.lat} lon={geo.lon} label={[geo.city, geo.country].filter(Boolean).join(", ")} sub={geo.resolvedFrom ? `IP ${geo.resolvedIp}${geo.timezone ? " · " + geo.timezone : ""}` : geo.timezone ? `TZ ${geo.timezone}` : null} />
+        <dl className="space-y-2 self-center font-mono text-sm">
+          {geo.resolvedFrom && <div className="flex justify-between gap-3"><dt className="flex-none text-faint">from domain</dt><dd className="min-w-0 truncate text-right text-ink">{geo.resolvedFrom}</dd></div>}
+          {geo.resolvedIp && <div className="flex justify-between gap-3"><dt className="flex-none text-faint">resolved IP</dt><dd className="min-w-0 truncate text-right text-ink">{geo.resolvedIp}</dd></div>}
           <div className="flex justify-between gap-3"><dt className="flex-none text-faint">location</dt><dd className="min-w-0 truncate text-right text-ink">{geo.flag} {[geo.city, geo.region, geo.country].filter(Boolean).join(", ")}</dd></div>
           <div className="flex justify-between gap-3"><dt className="text-faint">coordinates</dt><dd className="tabular-nums text-muted">{geo.lat?.toFixed(4)}, {geo.lon?.toFixed(4)}</dd></div>
           {geo.isp && <div className="flex justify-between gap-3"><dt className="flex-none text-faint">isp</dt><dd className="min-w-0 truncate text-right text-muted">{geo.isp}</dd></div>}
@@ -269,15 +385,16 @@ function Investigator({ initialQuery = "", onResult, preset }) {
     setR({ type: t, query });
     try {
       if (t === "ip") {
-        const [vt, abuse, shodan, geo, urlscan] = await Promise.all([vtLookup("ip", query), abuseIpdb(query), shodanInternetDB(query), geoFor("ip", query), urlscanSearch("ip", query)]);
+        const [vt, abuse, shodan, geo, urlscan, ipqs] = await Promise.all([vtLookup("ip", query), abuseIpdb(query), shodanInternetDB(query), geoFor("ip", query), urlscanSearch("ip", query), ipqsLookup("ip", query)]);
         let hostVt = null, hostName = null;
         if (shodan && shodan.found && shodan.hostnames && shodan.hostnames.length && vt && vt.stats) { hostName = shodan.hostnames[0]; hostVt = await vtLookup("domain", hostName); }
-        const result = { type: t, query, vt, abuse, shodan, geo, hostVt, hostName, urlscan };
+        const result = { type: t, query, vt, abuse, shodan, geo, hostVt, hostName, urlscan, ipqs };
         setR(result); recordHistory(onResult, result);
       } else {
         const us = t !== "file" ? urlscanSearch(t, query) : Promise.resolve(null);
-        const [vt, geo, urlscan] = await Promise.all([vtLookup(t, query), geoFor(t, query), us]);
-        const result = { type: t, query, vt, geo, urlscan };
+        const iq = t !== "file" ? ipqsLookup(t, query) : Promise.resolve(null);
+        const [vt, geo, urlscan, ipqs] = await Promise.all([vtLookup(t, query), geoFor(t, query), us, iq]);
+        const result = { type: t, query, vt, geo, urlscan, ipqs };
         setR(result); recordHistory(onResult, result);
       }
     } finally { setRunning(false); }
@@ -317,7 +434,7 @@ function Investigator({ initialQuery = "", onResult, preset }) {
       {!running && r && (
         <div className="mt-4 flex flex-wrap items-center gap-3">
           {r._saved && <span className="chip border-info/50 text-info">saved result — no new API calls</span>}
-          <button onClick={() => run(r.query, r.type)} className="ml-auto font-mono text-[11px] text-faint transition-colors hover:text-brand">\u21bb re-scan (fresh)</button>
+          <button onClick={() => run(r.query, r.type)} className="ml-auto font-mono text-[11px] text-faint transition-colors hover:text-brand">↻ re-scan (fresh)</button>
         </div>
       )}
 
@@ -332,19 +449,21 @@ function Investigator({ initialQuery = "", onResult, preset }) {
       {!running && r && (
         <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
           <SourceCard name="virustotal · 90+ engines" logo="virustotal" status={cardStatus(r.vt, running)}><VtBody d={r.vt} type={r.type} /></SourceCard>
-          {isIp && <SourceCard name="abuseipdb · reputation" logo="abuseipdb" status={cardStatus(r.abuse, running)}><AbuseBody d={r.abuse} /></SourceCard>}
-          {isIp && <SourceCard name="shodan · exposed services" logo="shodan" status={cardStatus(r.shodan, running)}><ShodanBody d={r.shodan} /></SourceCard>}
+          {!isIp && r.type !== "file" && r.ipqs && <SourceCard name="ipqualityscore · url risk" logo="ipqualityscore" status={cardStatus(r.ipqs, running)}><IpqsBody d={r.ipqs} value={r.query} type={r.type} /></SourceCard>}
+          {isIp && <SourceCard name="abuseipdb · reputation" logo="abuseipdb" status={cardStatus(r.abuse, running)}><AbuseBody d={r.abuse} value={r.query} /></SourceCard>}
+          {isIp && <SourceCard name="ipqualityscore · fraud score" logo="ipqualityscore" status={cardStatus(r.ipqs, running)}><IpqsBody d={r.ipqs} value={r.query} type={r.type} /></SourceCard>}
+          {isIp && <SourceCard name="shodan · exposed services" logo="shodan" status={cardStatus(r.shodan, running)}><ShodanBody d={r.shodan} value={r.query} /></SourceCard>}
           {isIp && r.hostName && (
             <div className="min-w-0 md:col-span-2">
               <SourceCard name={`virustotal · auto deep-dive on ${r.hostName}`} logo="virustotal" status={cardStatus(r.hostVt, running)}><VtBody d={r.hostVt} type="domain" /></SourceCard>
             </div>
           )}
+          <GeoBlock geo={r.geo} />
           {r.urlscan && (
             <div className="min-w-0 md:col-span-2">
               <SourceCard name="urlscan.io · recent page scans" status={cardStatus(r.urlscan, running)}><UrlscanBody d={r.urlscan} /></SourceCard>
             </div>
           )}
-          <GeoBlock geo={r.geo} />
         </div>
       )}
 

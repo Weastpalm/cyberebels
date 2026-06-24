@@ -19,6 +19,7 @@ import PrivacyHub from "./pages/PrivacyHub.jsx";
 import QuantumVpn from "./pages/QuantumVpn.jsx";
 import Tools from "./pages/Tools.jsx";
 import WhatIsMyIp from "./pages/WhatIsMyIp.jsx";
+import OsintPhone from "./pages/osint/Phone.jsx";
 import OsintExposure from "./pages/osint/Exposure.jsx";
 import OsintBreach from "./pages/osint/Breach.jsx";
 import OsintFootprint from "./pages/osint/Footprint.jsx";
@@ -98,6 +99,7 @@ export default function App() {
             <Route path="/osint/footprint" element={<OsintFootprint />} />
             <Route path="/osint/brokers" element={<OsintBrokers />} />
             <Route path="/osint/username" element={<OsintUsername />} />
+            <Route path="/osint/phone" element={<OsintPhone />} />
             <Route path="/osint/email" element={<OsintEmail />} />
             <Route path="/osint/base64" element={<OsintDecoder />} />
             <Route path="/osint/decoder" element={<OsintDecoder />} />

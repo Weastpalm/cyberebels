@@ -59,7 +59,7 @@ export default function WhatIsMyIp() {
           </div>
           <div className="min-w-0">
             {located
-              ? <GeoConsole lat={info.lat} lon={info.lon} label={[info.city, info.country].filter(Boolean).join(", ")} sub="↑ approximate location from your IP" />
+              ? <GeoConsole flag={info.flag} lat={info.lat} lon={info.lon} label={[info.city, info.country].filter(Boolean).join(", ")} sub="↑ approximate location from your IP" />
               : <div className="panel flex h-full min-h-[180px] items-center justify-center p-6 text-center font-mono text-xs text-faint">{loading ? "loading map…" : "No map — location couldn't be resolved (a VPN or privacy network can cause this)."}</div>}
           </div>
         </div>

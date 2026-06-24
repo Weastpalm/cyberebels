@@ -19,6 +19,7 @@ export async function getIpInfo() {
         region: data.region,
         country: data.country,
         countryCode: data.country_code,
+        flag: data.flag?.emoji || "",
         lat: data.latitude,
         lon: data.longitude,
         timezone: data.timezone?.id || data.timezone?.utc || "",
